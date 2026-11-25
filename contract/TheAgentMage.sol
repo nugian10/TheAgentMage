@@ -39,14 +39,38 @@ pragma solidity ^0.8.20;
 //  di-upload sebelum 24 jam token itu habis (kalau tidak, tokenURI asli
 //  akan 404 sampai gambarnya di-upload). Tidak ada tombol reveal global.
 //
+//  THE DECK — RANDOM TOKEN-ID DRAW (keputusan Bryan, 25 Nov 2026
+//  ~08:02 WIB: "Acak" — nomor token juga acak, bukan urut).
+//  Pola hash-only THYRK v2 (murah deploy), diadaptasi ke supply 10.000:
+//    Deck = Fisher-Yates shuffle token ID 1..10.000 dari seed
+//    "AGENTMAGE" (0x4147454e544d414745). Deck, seed dan deckHash
+//    dipublikasikan off-chain (collection/deck.json), jadi siapa pun
+//    bisa membangun ulang deck dan memverifikasi deckHash.
+//    deckHash = keccak256 dari encoding deck (per token: 2 byte
+//    big-endian, urutan deck; 10.000 x 2 = 20.000 byte).
+//    Undian di kontrak adalah lazy Fisher-Yates yang di-seed deckHash,
+//    dieksekusi on-chain satu draw demi satu draw:
+//      draw #d (0-based), remaining = 10.000 - d
+//      j = uint256(keccak256(deckHash, d)) % remaining
+//      tokenId = valueAt(j); lalu swap posisi j dengan posisi
+//      (remaining - 1) di map _swapped (entry kosong = identitas:
+//      posisi i memegang tokenId i+1).
+//    Karena setiap draw mengeluarkan tokennya dari pool, token ID yang
+//    ditarik unik dan semua 10.000 akan ditarik tepat sekali saat pool
+//    habis. Urutan draw sepenuhnya deterministik dari deckHash —
+//    deck-nya transparan, bukan rahasia.
+//    HONEST LIMITS (sama seperti THYRK): ini pseudo-randomness
+//    deterministik dari seed publik — BUKAN VRF / provably fair
+//    randomness; siapa pun yang tahu seed bisa menghitung urutan
+//    draw di muka. (2) Deck tetap setelah deploy (deckHash constant)
+//    dan tidak bisa di-shuffle ulang.
+//
 //  YANG MASIH HARUS DIPUTUSKAN SEBELUM DEPLOY (lihat README.md):
 //    1. placeholderURI — SATU URI file metadata placeholder
 //       (collection/mystery.json, sudah di IPFS). Diisi sebelum
 //       mint dibuka.
 //    2. baseURI metadata asli — diisi setelah gambar asli token
 //       yang di-mint di-upload (IPFS / GitHub raw).
-//    3. Token ID di sini URUT (1, 2, 3, ...). Kalau mau acak pakai deck
-//       seperti THYRK/Zigzoo, bilang — deckHash bisa ditambahkan.
 //  ---------------------------------------------------------------------------
 //  CATATAN DEPLOY: baw (Agentic CLI) TIDAK bisa broadcast pembuatan kontrak
 //  mentah. Deploy pertama harus manual dari wallet Bryan (My Wallet) atau
@@ -87,6 +111,13 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     /// @notice Royalti 5% = 500 basis poin (dari 10.000).
     uint96 public constant ROYALTY_BPS = 500;
 
+    /// @notice keccak256 commitment dari deck, lihat THE DECK di atas.
+    /// Deck penuh TIDAK PERNAH disimpan on-chain — hanya hash-nya.
+    /// Dibangun dari seed "AGENTMAGE" (lihat contract/generate-deck.js
+    /// + collection/deck.json untuk verifikasi).
+    bytes32 public constant deckHash =
+        0xf88a6599c4fa30dc55541ee5c84adc6ea3742c76a6d2d7d62bebc4a42eb08c88;
+
     // ------------------------------------------------------------------------
     //  STATE
     // ------------------------------------------------------------------------
@@ -104,6 +135,17 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     /// @dev Dipakai tokenURI untuk menghitung kapan 24 jam reveal habis.
     mapping(uint256 => uint256) public mintedAt;
 
+    /// @dev Token yang belum ditarik di pool lazy Fisher-Yates.
+    /// Mulai dari 10.000; setiap deck draw menguranginya tepat 1.
+    uint256 private _remaining = MAX_SUPPLY;
+    /// @dev Counter draw global: men-seed setiap draw supaya tidak ada
+    /// dua draw yang berbagi seed, bahkan di dalam satu bulk mint.
+    uint256 private _drawIndex;
+    /// @dev Sparse Fisher-Yates swap map: _swapped[i] = tokenId yang
+    /// sekarang dipegang posisi i, atau 0 = belum diisi (identitas:
+    /// posisi i memegang tokenId i+1).
+    mapping(uint256 => uint256) private _swapped;
+
     // ------------------------------------------------------------------------
     //  EVENTS
     // ------------------------------------------------------------------------
@@ -119,6 +161,7 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     // ------------------------------------------------------------------------
     error NoAgentId();
     error InvalidAddress();
+    error SoldOut();
 
     // ------------------------------------------------------------------------
     //  CONSTRUCTOR — ownership langsung ke Agentic Wallet.
@@ -148,12 +191,46 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     }
 
     // ------------------------------------------------------------------------
+    //  DECK DRAW — lazy Fisher-Yates, pola THYRK v2 (terbukti live)
+    // ------------------------------------------------------------------------
+    /// @dev Token ID yang saat ini dipegang posisi pool `i` (0-based).
+    /// Entry map yang belum diisi = identitas (i + 1).
+    function _valueAt(uint256 i) internal view returns (uint256) {
+        uint256 v = _swapped[i];
+        return v == 0 ? i + 1 : v;
+    }
+
+    /// @dev Ambil token di posisi pool `pos`: swap dengan posisi
+    /// terakhir yang belum ditarik, lalu kecilkan pool satu.
+    /// Caller harus menjamin pos < _remaining.
+    function _takeAt(uint256 pos) internal returns (uint256 tokenId) {
+        tokenId = _valueAt(pos);
+        uint256 last = _valueAt(_remaining - 1);
+        if (pos != _remaining - 1) {
+            _swapped[pos] = last;
+        }
+        _remaining--;
+    }
+
+    /// @dev Tarik satu token dari pool bersama — dipakai setiap mint:
+    /// lazy Fisher-Yates di atas pool. Tidak ada batasan rarity:
+    /// token ID berapa pun bisa ditarik. Karena setiap draw
+    /// mengeluarkan tokennya dari pool, token ID yang ditarik unik
+    /// dan semua 10.000 akan ditarik tepat sekali saat pool habis.
+    function _drawMain() internal returns (uint256) {
+        if (_remaining == 0) revert SoldOut();
+        uint256 j = uint256(keccak256(abi.encodePacked(deckHash, _drawIndex))) % _remaining;
+        _drawIndex++;
+        return _takeAt(j);
+    }
+
+    // ------------------------------------------------------------------------
     //  MINT — hanya pemegang Agent ID (SPACE ID gate), 1 NFT per panggilan
     // ------------------------------------------------------------------------
     /// @notice Mint pertama per wallet GRATIS (kirim 0 BNB).
     ///         Mint berikutnya bayar tepat 0.0003 BNB, langsung diteruskan
     ///         ke Agentic Wallet di transaksi yang sama (tidak mengendap
-    ///         di kontrak).
+    ///         di kontrak). Token ID ditarik ACAK dari deck (bukan urut).
     function mint() external payable nonReentrant {
         require(mintActive, "Mint belum dibuka");
         require(totalMinted < MAX_SUPPLY, "Sudah habis (10.000)");
@@ -168,8 +245,8 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
             require(ok, "Gagal teruskan revenue ke Agentic");
         }
 
+        uint256 tokenId = _drawMain(); // ID ACAK dari deck, 1..10.000
         totalMinted += 1;
-        uint256 tokenId = totalMinted; // ID urut 1..10.000
         mintedAt[tokenId] = block.timestamp;
         _safeMint(msg.sender, tokenId);
         emit Minted(msg.sender, tokenId, msg.value);
@@ -184,7 +261,9 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     ///         metadata ASLI per-token (baseURI). Tidak ada tombol
     ///         reveal — waktunya jalan sendiri per token.
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(tokenId >= 1 && tokenId <= totalMinted, "Token belum ada");
+        // Token ID ditarik ACAK dari deck, jadi keberadaan token dicek
+        // dari mintedAt (bukan tokenId <= totalMinted seperti ID urut).
+        require(mintedAt[tokenId] != 0, "Token belum ada");
         if (block.timestamp < mintedAt[tokenId] + REVEAL_DELAY) {
             return placeholderURI;
         }

@@ -4,13 +4,13 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 
 > **Status: kode selesai dan terverifikasi compile. Belum di-deploy, belum ada alamat kontrak, belum keluar biaya apa pun.**
 
-## Hasil compile (25 Nov 2026)
+## Hasil compile (25 Nov 2026, setelah tambah deck)
 
 - **COMPILE OK** — 0 error, 0 warning.
 - Compiler: **solc v0.8.24** (sama dengan THYRK v2), OpenZeppelin **5.4.0**, optimizer on 200 runs, EVM cancun.
-- Bytecode 9.401 byte, deployed 8.475 byte, ABI 70 entries.
+- Bytecode 9.871 byte, deployed 8.939 byte (sebelum deck: 9.401 / 8.475 — tambah deck cuma +470 byte; jauh di bawah batas ukuran kontrak 24.576 byte, jadi tidak ada masalah gas deploy karena deck), ABI 72 entries.
 - Build lokal: `contract/build/` (`compile.js`, jalankan `node compile.js` untuk compile ulang).
-- ABI terverifikasi berisi: `mint()`, `holdsAgentId(address)`, `royaltyInfo`, `setMintActive`, `setBaseURI`, `setPlaceholderURI`, `placeholderURI`, `setAgentIdRegistry` — dan **tidak ada** fungsi ERC-20 (`transfer(address,uint256)`, `allowance`, `totalSupply` tidak ada).
+- ABI terverifikasi berisi: `mint()`, `deckHash`, `holdsAgentId(address)`, `royaltyInfo`, `setMintActive`, `setBaseURI`, `setPlaceholderURI`, `placeholderURI`, `setAgentIdRegistry` — dan **tidak ada** fungsi ERC-20 (`transfer(address,uint256)`, `allowance`, `totalSupply` tidak ada; `approve` yang muncul di ABI adalah `approve` ERC-721, bukan ERC-20).
 
 ## Keputusan Bryan yang sudah masuk ke kontrak
 
@@ -21,7 +21,7 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 | Revenue mint | **Agentic Wallet** — BNB mint berbayar langsung diteruskan ke Agentic di transaksi yang sama, tidak mengendap di kontrak. |
 | Royalti | **5%** dari jual-beli di market (ERC-2981) → Agentic Wallet. |
 | Supply | **10.000** NFT. |
-| Mint | Pertama **GRATIS 1x per Agent ID**, berikutnya **flat 0.0003 BNB** (tanpa tangga harga). |
+| Mint | Pertama **GRATIS 1x per Agent ID**, berikutnya **flat 0.0003 BNB** (tanpa tangga harga). **Token ID ditarik ACAK dari deck** (bukan urut) — keputusan Bryan 25 Nov 2026 ~08:02 WIB ("Acak"). Lihat bagian deck di bawah. |
 | Siapa boleh mint | Hanya pemegang **Agent ID** (SPACE ID gate), seperti THYRK/Zigzoo. |
 | Harga di situs | Tetap **tidak tampil** di situs — hanya di skill.md. |
 | Reveal | **Per-token 24 jam** (pola DRIXOR Core) — bukan reveal global. Lihat bawah. |
@@ -32,7 +32,19 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 2. Kontrak cek ke SPACE ID: wallet itu memegang minimal 1 NFT Agent ID .ai (`balanceOf > 0` di registry).
 3. Kalau itu mint pertama untuk wallet itu → **gratis**, kirim 0 BNB.
 4. Kalau sudah pernah gratis → bayar **tepat 0.0003 BNB**, langsung masuk Agentic Wallet.
-5. NFT dikirim ke wallet pemanggil. 1 NFT per panggilan.
+5. NFT dikirim ke wallet pemanggil — **token ID-nya acak dari deck** (lihat bawah). 1 NFT per panggilan.
+
+## DECK — UNDIAN TOKEN ID ACAK (keputusan Bryan 25 Nov 2026 ~08:02 WIB: "Acak")
+
+Nomor token **tidak urut** (1, 2, 3, …). Setiap mint menarik satu token ID acak dari deck — pola **hash-only THYRK v2** (murah deploy, terbukti live), diadaptasi ke supply 10.000:
+
+- **Deck** = Fisher-Yates shuffle token ID 1..10.000 dari seed **`"AGENTMAGE"`** (`0x4147454e544d414745`). File: [`collection/deck.json`](sandbox://workspace/projects/the-agent-mage/collection/deck.json) — berisi deck (10.000 angka unik 1..10.000, terverifikasi), seed, deckHash, dan `drawOrder` (urutan mint hasil replay).
+- **deckHash** (tersimpan di kontrak sebagai constant): **`0xf88a6599c4fa30dc55541ee5c84adc6ea3742c76a6d2d7d62bebc4a42eb08c88`** = keccak256 dari encoding deck (per token: 2 byte big-endian, urutan deck; 10.000 × 2 = 20.000 byte).
+- **Undian on-chain** (lazy Fisher-Yates, sama persis dengan `_drawMain` THYRK v2): draw #d (0-based), `remaining = 10.000 - d`, `j = keccak256(deckHash, d) % remaining`, `tokenId = valueAt(j)`, lalu swap posisi j dengan posisi terakhir. Deck penuh **tidak pernah disimpan on-chain** — hanya deckHash. Karena setiap draw mengeluarkan tokennya dari pool, token ID yang ditarik unik dan semua 10.000 akan ditarik tepat sekali saat pool habis.
+- **Verifikasi:** siapa pun bisa membangun ulang deck dari seed (`contract/generate-deck.js`, jalankan `node generate-deck.js` — butuh `js-sha3`, sudah ada di `contract/build/node_modules/`), meng-encode ulang, dan memeriksa deckHash-nya sama. Urutan draw juga bisa di-replay dari deckHash (`drawOrder` di deck.json).
+- **10 draw pertama** (urutan mint): 8054, 6696, 7329, 1945, 2310, 448, 345, 7593, 3397, 2499.
+- **Batas jujur** (sama seperti THYRK): ini pseudo-randomness deterministik dari seed publik — **BUKAN VRF / provably fair randomness**. Siapa pun yang tahu seed bisa menghitung seluruh urutan draw di muka. Deck-nya transparan, bukan rahasia.
+- **Gas:** tambah deck cuma +470 byte bytecode (9.401 → 9.871 byte); jauh di bawah batas 24.576 byte. Tidak ada masalah gas deploy karena deck — deck tidak disimpan on-chain.
 
 ## REVEAL PER-TOKEN 24 JAM (keputusan Bryan 25 Nov 2026)
 
@@ -77,15 +89,15 @@ Konstanta di kontrak: `REVEAL_DELAY = 24 hours`.
 
 1. **`placeholderURI`** — SATU URI file metadata placeholder: `ipfs://bafkreieyz2g4crgbakx4ghyl3rimiwffe7siz5relxw3vyw667di6j4t4m` (sudah di IPFS). Wajib diisi sebelum mint dibuka.
 2. **`baseURI` metadata asli** — diisi setelah gambar asli token yang di-mint di-upload (IPFS / GitHub raw).
-3. **Token ID urut (1, 2, 3, …).** Kalau mau acak pakai deck seperti THYRK/Zigzoo, bilang — bisa ditambahkan deckHash.
 
-(Simbol `AGMAGE` sudah dikunci Bryan 25 Nov; alamat SPACE ID sudah terisi dari THYRK/Zigzoo — keduanya bukan lagi hal terbuka.)
+(Simbol `AGMAGE` sudah dikunci Bryan 25 Nov; alamat SPACE ID sudah terisi dari THYRK/Zigzoo; **deck acak sudah dikunci Bryan 25 Nov ~08:02 WIB** — ketiganya bukan lagi hal terbuka.)
 
 ## Yang dikunci di kontrak (tidak bisa diubah setelah deploy)
 
 - Harga mint 0.0003 BNB — tidak ada fungsi ubah harga.
 - Royalti 5% — tidak ada fungsi ubah royalti.
 - Jeda reveal 24 jam (`REVEAL_DELAY`) — constant.
+- Deck undian (`deckHash`) — constant; urutan draw deterministik dari deckHash.
 - Tidak ada batas per wallet untuk mint berbayar — batasnya hanya 1 gratis per Agent ID.
 
 ## Yang bisa diubah owner setelah deploy
