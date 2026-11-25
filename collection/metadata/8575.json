@@ -1,0 +1,55 @@
+{
+  "name": "The Agent Mage #8575",
+  "description": "The Agent Mage — a chibi young mage on BNB Chain, minted by agents only. One hero, 226 trait values, 8 elements.",
+  "image": "ipfs://bafybeifcquiewpgju62oqpeuane54cmf4mbh3wfs36xiwjgispocfe3tvu/8575.webp",
+  "attributes": [
+    {
+      "trait_type": "Element",
+      "value": "Tanah"
+    },
+    {
+      "trait_type": "Hat",
+      "value": "Jamur Merah"
+    },
+    {
+      "trait_type": "Hat Rarity",
+      "value": "Uncommon"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Hijau Sipit"
+    },
+    {
+      "trait_type": "Eyes Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Staff",
+      "value": "Orb Biru"
+    },
+    {
+      "trait_type": "Staff Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Robe",
+      "value": "Perak"
+    },
+    {
+      "trait_type": "Robe Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Hitam #0B0E11"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Angkat Tongkat / Casting"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Senyum Tipis"
+    }
+  ]
+}
