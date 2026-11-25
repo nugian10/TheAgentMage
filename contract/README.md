@@ -8,9 +8,9 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 
 - **COMPILE OK** — 0 error, 0 warning.
 - Compiler: **solc v0.8.24** (sama dengan THYRK v2), OpenZeppelin **5.4.0**, optimizer on 200 runs, EVM cancun.
-- Bytecode 9.268 byte, deployed 8.342 byte, ABI 70 entries.
+- Bytecode 9.401 byte, deployed 8.475 byte, ABI 70 entries.
 - Build lokal: `contract/build/` (`compile.js`, jalankan `node compile.js` untuk compile ulang).
-- ABI terverifikasi berisi: `mint()`, `holdsAgentId(address)`, `royaltyInfo`, `setMintActive`, `setBaseURI`, `setPlaceholderBaseURI`, `setAgentIdRegistry` — dan **tidak ada** fungsi ERC-20 (`transfer(address,uint256)`, `allowance`, `totalSupply` tidak ada).
+- ABI terverifikasi berisi: `mint()`, `holdsAgentId(address)`, `royaltyInfo`, `setMintActive`, `setBaseURI`, `setPlaceholderURI`, `placeholderURI`, `setAgentIdRegistry` — dan **tidak ada** fungsi ERC-20 (`transfer(address,uint256)`, `allowance`, `totalSupply` tidak ada).
 
 ## Keputusan Bryan yang sudah masuk ke kontrak
 
@@ -39,29 +39,32 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 **Bukan satu reveal global untuk semua token.** Setiap token punya waktunya sendiri:
 
 1. Saat token di-mint, kontrak mencatat `mintedAt[tokenId] = block.timestamp`.
-2. Selama **24 jam pertama** setelah mint, `tokenURI(tokenId)` mengarah ke metadata **placeholder** (`placeholderBaseURI + tokenId + ".json"`) — kartu misteri, gambarnya sama untuk semua token.
+2. Selama **24 jam pertama** setelah mint, `tokenURI(tokenId)` mengarah ke **SATU metadata placeholder yang sama untuk semua token** (`placeholderURI`) — kartu misteri, gambarnya sama untuk semua token. Tidak ada 10.000 file placeholder.
 3. Setelah **24 jam lewat**, `tokenURI(tokenId)` **otomatis** mengarah ke metadata **asli** (`baseURI + tokenId + ".json"`). Tidak ada tombol reveal, tidak ada transaksi reveal — waktunya jalan sendiri per token.
 
 Konstanta di kontrak: `REVEAL_DELAY = 24 hours`.
 
 ### Kenapa sistem ini
 
-- Mint bisa dibuka **tanpa menunggu upload 10.000 gambar** — itu yang Bryan malas tunggu.
+- Mint bisa dibuka **tanpa menunggu upload 10.000 file apa pun** — itu yang Bryan minta ("Saya gamau upload 10.000 file").
+- **Hanya ada SATU file placeholder** (`mystery.json`) untuk semua token yang belum reveal — bukan 10.000 file. Folder `collection/metadata-placeholder/` (10.000 JSON) yang sempat dibuat **sudah dihapus** dan tidak pernah di-upload ke mana pun.
 - Gambar asli hanya perlu dibuat untuk token yang **benar-benar sudah di-mint** — bukan 10.000 sekaligus.
 - Kolektor tetap dapat kejutan: 24 jam pertama NFT-nya misteri.
 
 ### Catatan operasional — PENTING
 
 - **Gambar asli tiap token yang di-mint HARUS sudah di-upload sebelum 24 jamnya habis.** Kalau belum, setelah 24 jam token itu menampilkan metadata asli yang belum ada filenya (404 di marketplace) sampai gambarnya di-upload. Jadi setelah mint dibuka, perlu ada yang memantau mint baru dan membuatkan gambarnya dalam 24 jam.
-- **`placeholderBaseURI` WAJIB diisi sebelum mint dibuka** (owner-only `setPlaceholderBaseURI`). Kalau kosong, tokenURI 24 jam pertama mengarah ke alamat kosong.
+- **`placeholderURI` WAJIB diisi sebelum mint dibuka** (owner-only `setPlaceholderURI`). Kalau kosong, tokenURI 24 jam pertama mengarah ke alamat kosong.
 - `baseURI` (metadata asli) boleh diisi belakangan, tapi harus sudah terisi sebelum token pertama melewati 24 jam.
 
-### File placeholder (sudah dibuat 25 Nov 2026)
+### File placeholder (sudah dibuat + di-upload 25 Nov 2026)
 
 - Kartu misteri: [`collection/mystery.webp`](sandbox://workspace/projects/the-agent-mage/collection/mystery.webp) — siluet chibi mage + tanda "?" emas, latar hitam #0B0E11.
-- IPFS (Pinata): **`ipfs://bafybeif2ufm7yrgzp6lml4uipuybcfslnk4qf6i4g5xccpovw7ruvix5qu`** (CID `bafybeif2ufm7yrgzp6lml4uipuybcfslnk4qf6i4g5xccpovw7ruvix5qu`).
-- Metadata placeholder: `collection/metadata-placeholder/1.json` … `10000.json` (10.000 file, terverifikasi sampel #1, #5000, #10000). Isi tiap file: nama "The Agent Mage #N", deskripsi "mystery mage, not revealed yet", image = IPFS kartu misteri, attributes Status = Unrevealed.
-- Folder metadata placeholder ini **belum di-upload ke mana pun** — nilai `placeholderBaseURI` yang dipakai di kontrak adalah alamat folder ini setelah di-upload (IPFS folder CID atau GitHub raw), bukan CID gambar misterinya.
+- Gambar IPFS (Pinata): **`ipfs://bafybeif2ufm7yrgzp6lml4uipuybcfslnk4qf6i4g5xccpovw7ruvix5qu`** (CID `bafybeif2ufm7yrgzp6lml4uipuybcfslnk4qf6i4g5xccpovw7ruvix5qu`).
+- Metadata placeholder — **SATU file saja**: `collection/mystery.json`, isinya nama "The Agent Mage — Mystery", deskripsi "mystery mage, not revealed yet. Reveals 24 hours after mint.", image = IPFS kartu misteri, attributes Status = Unrevealed.
+- Metadata placeholder IPFS (Pinata, satu file): **`ipfs://bafkreieyz2g4crgbakx4ghyl3rimiwffe7siz5relxw3vyw667di6j4t4m`** (CID `bafkreieyz2g4crgbakx4ghyl3rimiwffe7siz5relxw3vyw667di6j4t4m`, terverifikasi gateway HTTP 200, isi cocok dengan file lokal).
+- **Nilai `placeholderURI` yang diisi on-chain setelah deploy: `ipfs://bafkreieyz2g4crgbakx4ghyl3rimiwffe7siz5relxw3vyw667di6j4t4m`**
+- 10.000 file placeholder lama (`collection/metadata-placeholder/1.json` … `10000.json`) **SUDAH DIHAPUS** — tidak dipakai, tidak pernah di-upload.
 
 ## SPACE ID gate — terverifikasi dari kontrak live
 
@@ -72,7 +75,7 @@ Konstanta di kontrak: `REVEAL_DELAY = 24 hours`.
 
 ## Yang masih harus diputuskan sebelum deploy
 
-1. **`placeholderBaseURI`** — alamat folder metadata placeholder setelah di-upload (IPFS / GitHub raw). Wajib diisi sebelum mint dibuka.
+1. **`placeholderURI`** — SATU URI file metadata placeholder: `ipfs://bafkreieyz2g4crgbakx4ghyl3rimiwffe7siz5relxw3vyw667di6j4t4m` (sudah di IPFS). Wajib diisi sebelum mint dibuka.
 2. **`baseURI` metadata asli** — diisi setelah gambar asli token yang di-mint di-upload (IPFS / GitHub raw).
 3. **Token ID urut (1, 2, 3, …).** Kalau mau acak pakai deck seperti THYRK/Zigzoo, bilang — bisa ditambahkan deckHash.
 
@@ -88,12 +91,12 @@ Konstanta di kontrak: `REVEAL_DELAY = 24 hours`.
 ## Yang bisa diubah owner setelah deploy
 
 - Buka/tutup mint (`mintActive`, mulai dari **tutup**).
-- `baseURI` metadata asli + `placeholderBaseURI` (kartu misteri).
+- `baseURI` metadata asli + `placeholderURI` (satu file kartu misteri).
 - Alamat `agentIdRegistry` (SPACE ID) + nyalakan/matikan cek Agent ID.
 - Tarik BNB nyasar yang tertinggal di kontrak (kalau ada).
 
 ## Catatan deploy
 
 - Deploy pertama **tidak bisa** lewat Agentic CLI (`baw` tidak bisa broadcast pembuatan kontrak mentah). Deploy harus manual dari wallet Bryan atau lewat factory — tapi constructor langsung memindahkan ownership ke Agentic Wallet, jadi siapa pun yang deploy, owner-nya tetap Agentic.
-- Setelah deploy: verifikasi source di BscScan (seperti proyek-proyek sebelumnya), lalu isi `placeholderBaseURI` (+ `baseURI` bila sudah ada), baru buka mint.
+- Setelah deploy: verifikasi source di BscScan (seperti proyek-proyek sebelumnya), lalu isi `placeholderURI` (`ipfs://bafkreieyz2g4crgbakx4ghyl3rimiwffe7siz5relxw3vyw667di6j4t4m`) (+ `baseURI` bila sudah ada), baru buka mint.
 - **Kontrak ini belum diaudit** — verifikasi BscScan bukan audit, sama seperti proyek sebelumnya.

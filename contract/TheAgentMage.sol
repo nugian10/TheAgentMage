@@ -29,18 +29,20 @@ pragma solidity ^0.8.20;
 //
 //  REVEAL PER-TOKEN 24 JAM (keputusan Bryan, 25 Nov 2026 ~07:53 WIB —
 //  pola DRIXOR Core): BUKAN satu reveal global. Setiap token punya
-//  waktunya sendiri: tokenURI menampilkan metadata PLACEHOLDER (kartu
-//  misteri) selama 24 jam pertama setelah token itu di-mint, lalu
-//  OTOMATIS menampilkan metadata asli. Jadi mint bisa dibuka TANPA
-//  upload 10.000 gambar dulu — gambar asli hanya perlu dibuat untuk
-//  token yang BENAR-BENAR sudah di-mint, dan harus sudah di-upload
-//  sebelum 24 jam token itu habis (kalau tidak, tokenURI asli akan
-//  404 sampai gambarnya di-upload). Tidak ada tombol reveal global.
+//  waktunya sendiri: tokenURI menampilkan SATU metadata PLACEHOLDER
+//  yang sama (kartu misteri) selama 24 jam pertama setelah token itu
+//  di-mint, lalu OTOMATIS menampilkan metadata asli. Satu file
+//  placeholder saja — TIDAK ADA 10.000 file placeholder (Bryan 25 Nov
+//  2026 ~07:57 WIB: "Saya gamau upload 10.000 file"). Jadi mint bisa
+//  dibuka TANPA upload 10.000 file apa pun — gambar asli hanya perlu
+//  dibuat untuk token yang BENAR-BENAR sudah di-mint, dan harus sudah
+//  di-upload sebelum 24 jam token itu habis (kalau tidak, tokenURI asli
+//  akan 404 sampai gambarnya di-upload). Tidak ada tombol reveal global.
 //
 //  YANG MASIH HARUS DIPUTUSKAN SEBELUM DEPLOY (lihat README.md):
-//    1. placeholderBaseURI — alamat folder metadata placeholder
-//       (10.000 JSON kartu misteri, dibuat di collection/
-//       metadata-placeholder/). Diisi sebelum mint dibuka.
+//    1. placeholderURI — SATU URI file metadata placeholder
+//       (collection/mystery.json, sudah di IPFS). Diisi sebelum
+//       mint dibuka.
 //    2. baseURI metadata asli — diisi setelah gambar asli token
 //       yang di-mint di-upload (IPFS / GitHub raw).
 //    3. Token ID di sini URUT (1, 2, 3, ...). Kalau mau acak pakai deck
@@ -91,7 +93,7 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     uint256 public totalMinted;
     bool public mintActive; // mulai false — dibuka owner setelah registry + baseURI siap
     string public baseURI; // metadata ASLI — contoh: "ipfs://.../metadata/"
-    string public placeholderBaseURI; // metadata PLACEHOLDER (kartu misteri)
+    string public placeholderURI; // SATU URI metadata PLACEHOLDER (kartu misteri)
     address public agentIdRegistry; // default = SPACE ID HandleRegistry
     bool public agentIdCheckRequired = true; // owner bisa matikan bila perlu
 
@@ -108,7 +110,7 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     event Minted(address indexed minter, uint256 indexed tokenId, uint256 paid);
     event MintActiveChanged(bool active);
     event BaseURIChanged(string baseURI);
-    event PlaceholderBaseURIChanged(string placeholderBaseURI);
+    event PlaceholderURIChanged(string placeholderURI);
     event AgentIdRegistryUpdated(address indexed agentIdRegistry);
     event AgentIdCheckChanged(bool required);
 
@@ -177,13 +179,14 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     //  METADATA — REVEAL PER-TOKEN 24 JAM
     // ------------------------------------------------------------------------
     /// @notice Selama 24 jam pertama setelah mint, tokenURI mengarah ke
-    ///         metadata PLACEHOLDER (kartu misteri). Setelah 24 jam,
-    ///         otomatis mengarah ke metadata ASLI (baseURI). Tidak ada
-    ///         tombol reveal — waktunya jalan sendiri per token.
+    ///         SATU metadata PLACEHOLDER yang sama untuk semua token
+    ///         (kartu misteri). Setelah 24 jam, otomatis mengarah ke
+    ///         metadata ASLI per-token (baseURI). Tidak ada tombol
+    ///         reveal — waktunya jalan sendiri per token.
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(tokenId >= 1 && tokenId <= totalMinted, "Token belum ada");
         if (block.timestamp < mintedAt[tokenId] + REVEAL_DELAY) {
-            return string(abi.encodePacked(placeholderBaseURI, tokenId.toString(), ".json"));
+            return placeholderURI;
         }
         return string(abi.encodePacked(baseURI, tokenId.toString(), ".json"));
     }
@@ -202,12 +205,13 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
         emit BaseURIChanged(newBaseURI);
     }
 
-    /// @notice Isi/ubah alamat folder metadata PLACEHOLDER (kartu misteri).
+    /// @notice Isi/ubah SATU URI metadata PLACEHOLDER (kartu misteri,
+    ///         sama untuk semua token yang belum reveal).
     ///         Wajib diisi SEBELUM mint dibuka — kalau kosong, tokenURI
     ///         24 jam pertama akan mengarah ke alamat kosong.
-    function setPlaceholderBaseURI(string calldata newPlaceholderBaseURI) external onlyOwner {
-        placeholderBaseURI = newPlaceholderBaseURI;
-        emit PlaceholderBaseURIChanged(newPlaceholderBaseURI);
+    function setPlaceholderURI(string calldata newPlaceholderURI) external onlyOwner {
+        placeholderURI = newPlaceholderURI;
+        emit PlaceholderURIChanged(newPlaceholderURI);
     }
 
     /// @notice Arahkan cek Agent ID ke registry lain (mis. bila SPACE ID
