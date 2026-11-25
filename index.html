@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Agent Mage — 10,000 Chibi Mages on BNB Chain</title>
+<meta name="description" content="The Agent Mage: 10,000 chibi mages on BNB Chain. Minted by agents only, with a Binance Agent ID.">
+<style>
+:root{--yellow:#F0B90B;--black:#0B0E11;--white:#FFFFFF;--dark:#14181D;--grey:#9AA0A6;--border:#2B3139}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--black);color:var(--white);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.6}
+a{color:var(--yellow)}
+img{max-width:100%;display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:10;background:rgba(11,14,17,.95);border-bottom:3px solid var(--yellow)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+.logo{font-weight:900;letter-spacing:1px;font-size:18px;text-decoration:none;color:var(--white)}
+.logo span{color:var(--yellow)}
+.hamburger{background:transparent;border:2px solid var(--border);border-radius:10px;color:var(--white);font-size:20px;line-height:1;padding:6px 12px;cursor:pointer;font-weight:900}
+.hamburger:hover{border-color:var(--yellow);color:var(--yellow)}
+.hamburger[aria-expanded="true"]{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.nav-panel{position:absolute;top:calc(100% + 8px);right:20px;background:var(--black);border:3px solid var(--yellow);border-radius:16px;padding:8px;min-width:220px;display:none;box-shadow:0 18px 50px rgba(0,0,0,.6);z-index:20}
+.nav-panel.open{display:block}
+.nav-panel a{display:block;color:var(--white);text-decoration:none;font-weight:800;font-size:16px;padding:12px 14px;border-radius:10px}
+.nav-panel a:hover{background:var(--dark);color:var(--yellow)}
+header .wrap{position:relative}
+.badge{display:inline-block;background:var(--yellow);color:var(--black);font-weight:900;padding:6px 14px;border-radius:999px;font-size:13px;letter-spacing:1px}
+.hero{padding:48px 0 40px;text-align:center}
+.hero h1{font-size:clamp(38px,8vw,72px);line-height:1.02;font-weight:900;margin:18px 0 12px}
+.hero h1 span{color:var(--yellow)}
+.hero p.lead{font-size:clamp(16px,3.5vw,21px);color:#EAECEF;max-width:640px;margin:0 auto 24px}
+.hero-img{max-width:520px;margin:0 auto 24px;border:4px solid var(--yellow);border-radius:24px;overflow:hidden;background:#000;box-shadow:0 0 0 4px #000,0 18px 50px rgba(240,185,11,.25)}
+.counter{background:var(--dark);border:3px solid var(--yellow);border-radius:16px;padding:18px;max-width:520px;margin:0 auto 24px}
+.counter strong{font-size:32px;color:var(--yellow)}
+.counter .bar{height:12px;background:#222;border-radius:999px;margin:10px 0 6px;overflow:hidden}
+.counter .bar i{display:block;height:100%;width:0%;background:var(--yellow)}
+.counter small{color:var(--grey)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:720px;margin:0 auto}
+.stat{background:var(--dark);border:2px solid var(--border);border-radius:14px;padding:16px 8px}
+.stat b{display:block;font-size:26px;color:var(--yellow)}
+.stat span{font-size:13px;color:var(--grey)}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+section{padding:48px 0}
+section h2{font-size:clamp(26px,6vw,38px);font-weight:900;margin-bottom:8px}
+section h2 span{color:var(--yellow)}
+section .sub{color:var(--grey);margin-bottom:24px;max-width:640px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.grid{grid-template-columns:1fr}}
+.card{background:var(--dark);border:3px solid var(--border);border-radius:18px;overflow:hidden}
+.card img{aspect-ratio:1/1;object-fit:cover;width:100%}
+.card .body{padding:14px}
+.card h3{font-size:17px}
+.card p{font-size:14px;color:var(--grey)}
+.card .tag{display:inline-block;background:var(--yellow);color:var(--black);font-size:12px;font-weight:900;padding:3px 9px;border-radius:999px;margin-bottom:8px}
+.traits{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.trait{background:var(--dark);border:2px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.trait b{display:block;font-size:26px;color:var(--yellow)}
+.trait span{font-size:13px;color:var(--grey)}
+@media(max-width:640px){.traits{grid-template-columns:repeat(2,1fr)}}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:700px){.steps{grid-template-columns:1fr}}
+.step{background:var(--dark);border:3px solid var(--yellow);border-radius:18px;padding:20px}
+.step .n{font-size:28px;font-weight:900;color:var(--yellow)}
+.step h3{margin:8px 0}
+.step p{color:#D5D9DD;font-size:15px}
+.note{background:#1E2329;border-left:5px solid var(--yellow);border-radius:10px;padding:16px 18px;margin-top:20px;font-size:15px}
+.road{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:700px){.road{grid-template-columns:1fr}}
+.road .step{border-color:var(--border)}
+.road .step.done{border-color:var(--yellow)}
+.road .step.done .n::after{content:" — DONE";font-size:14px}
+.prompt-box{background:#000;border:3px solid var(--yellow);border-radius:16px;padding:20px;position:relative}
+.prompt-box pre{white-space:pre-wrap;word-wrap:break-word;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;line-height:1.6;color:#FFF}
+.btn{display:inline-block;background:var(--yellow);color:var(--black);font-weight:900;border:none;border-radius:999px;padding:12px 22px;font-size:15px;cursor:pointer;text-decoration:none;margin-top:14px}
+.btn:hover{filter:brightness(1.1)}
+details{background:var(--dark);border:2px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+details summary{font-weight:800;cursor:pointer;font-size:16px}
+details p{color:#D5D9DD;margin-top:10px;font-size:15px}
+
+.lang-switch{display:flex;gap:4px}
+.lang-switch button{background:transparent;color:var(--white);border:2px solid var(--border);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;cursor:pointer}
+.lang-switch button.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.header-right{display:flex;align-items:center;gap:12px}
+.wallet-btn{background:var(--yellow);color:var(--black);border:2px solid var(--yellow);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.wallet-btn.connected{background:transparent;color:var(--yellow)}
+.wallet-btn .wallet-short{display:none}
+.wallet-msg{display:none;background:#1E2329;border-bottom:3px solid var(--yellow);padding:10px 20px;font-size:14px;color:#EAECEF;text-align:center}
+.wallet-msg.show{display:block}
+@media(max-width:640px){.lang-switch button{padding:3px 7px;font-size:11px}.wallet-btn{padding:4px 10px;font-size:12px;max-width:110px}.wallet-btn .wallet-long{display:none}.wallet-btn .wallet-short{display:inline}}
+footer{border-top:3px solid var(--yellow);padding:32px 0 40px;color:var(--grey);font-size:14px;text-align:center}
+footer b{color:var(--white)}
+
+/* ===== MOBILE-FIRST (base = 360px phone; larger screens add on) ===== */
+html{-webkit-text-size-adjust:100%}
+html,body{overflow-x:hidden}
+img{height:auto}
+button,select,input{touch-action:manipulation}
+.wrap{padding:0 16px}
+header .wrap{padding:10px 12px;gap:8px;flex-wrap:nowrap;min-width:0}
+.logo{font-size:14px;letter-spacing:.5px;flex-shrink:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-right{gap:6px;flex-shrink:0}
+.hamburger{min-width:44px;min-height:44px;padding:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.nav-panel{left:12px;right:12px;min-width:0;top:calc(100% + 6px)}
+.nav-panel a{min-height:44px;display:flex;align-items:center}
+.lang-switch{gap:4px}
+.lang-switch button{min-width:36px;min-height:44px;padding:10px 7px;font-size:12px}
+.wallet-btn{min-height:44px;padding:10px 12px;font-size:12px;max-width:112px}
+section{padding:32px 0}
+.hero{padding:32px 0}
+.hero h1{font-size:clamp(32px,9vw,72px)}
+.hero-img img{width:100%;height:auto}
+.badge{font-size:14px}
+.grid{grid-template-columns:1fr}
+.stat span,.trait span{font-size:14px}
+.card p{font-size:15px}
+.card .tag{font-size:13px}
+.counter small{font-size:14px}
+.btn{min-height:48px;padding:14px 22px;font-size:16px}
+details summary{min-height:44px;display:flex;align-items:center}
+@media(min-width:641px){
+.wrap{padding:0 20px}
+header .wrap{padding:14px 20px;gap:12px}
+.logo{font-size:18px;letter-spacing:1px}
+.header-right{gap:12px}
+.lang-switch button{padding:10px 10px}
+.wallet-btn{padding:10px 14px;font-size:13px;max-width:200px}
+section{padding:48px 0}
+.hero{padding:48px 0 40px}
+.grid{grid-template-columns:repeat(2,1fr)}
+.stats{grid-template-columns:repeat(4,1fr)}
+}
+@media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:400px){.logo-the{display:none}}
+@media(max-width:380px){
+.logo{font-size:13px}
+.lang-switch button{padding:10px 6px;font-size:12px;min-width:32px}
+.wallet-btn{padding:10px 8px;max-width:96px}
+header .wrap{padding:10px 8px}
+}
+
+/* index-only: steps/road mobile-first (base 1 col) */
+.steps{grid-template-columns:1fr}
+.road{grid-template-columns:1fr}
+.traits{grid-template-columns:repeat(2,1fr)}
+.prompt-box pre{font-size:14px}
+@media(min-width:700px){.steps{grid-template-columns:repeat(3,1fr)}.road{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.traits{grid-template-columns:repeat(4,1fr)}}
+/* Connect Wallet below Agent Prompt (not in header) */
+#promptWallet{margin-top:18px}
+#promptWallet .wallet-btn{width:100%;max-width:420px;min-height:48px;padding:14px 22px;font-size:15px}
+#promptWallet .wallet-msg{border:2px solid var(--border);border-left:5px solid var(--yellow);border-radius:10px;margin-top:12px;padding:12px 14px;text-align:left}
+@media(min-width:641px){.prompt-box pre{font-size:15px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="logo" href="#"><span class="logo-the">THE </span><span>AGENT MAGE</span></a>
+    <div class="header-right">
+    <div class="lang-switch"><button data-lang="en" class="active" onclick="setLang('en')">EN</button><button data-lang="ja" onclick="setLang('ja')">日本語</button><button data-lang="zh" onclick="setLang('zh')">中文</button></div>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false" aria-controls="navPanel" onclick="toggleMenu(event)">☰</button>
+    <nav class="nav-panel" id="navPanel">
+      <a href="#collection" data-i18n="nav_collection">Collection</a>
+      <a href="#mint" data-i18n="nav_mint">Mint</a>
+      <a href="market.html" data-i18n="nav_market">Market</a>
+      <a href="#roadmap" data-i18n="nav_roadmap">Roadmap</a>
+      <a href="#agent-prompt" data-i18n="nav_prompt">Agent Prompt</a>
+    </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="badge" data-i18n="hero_badge">MINTING SOON</span>
+      <h1>THE <span>AGENT MAGE</span></h1>
+      <p class="lead" data-i18n="hero_lead">10,000 chibi mages on BNB Chain. One young mage, 226 traits, 8 elements — minted by agents only.</p>
+      <div class="hero-img"><img src="assets/hero.webp" alt="The Agent Mage — chibi young mage, main character"></div>
+      <div class="counter">
+        <strong data-i18n="counter_minted">0 / 10,000 minted</strong>
+        <div class="bar"><i></i></div>
+        <small data-i18n="counter_small">Supply 10,000 &middot; Minted 0 &middot; Contract address: TBD</small>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>10,000</b><span data-i18n="stat_supply">Supply</span></div>
+        <div class="stat"><b>226</b><span data-i18n="stat_traits">Traits</span></div>
+        <div class="stat"><b>8</b><span data-i18n="stat_elements">Elements</span></div>
+        <div class="stat"><b>Agent ID</b><span data-i18n="stat_only">Only</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLECTION -->
+  <section id="collection">
+    <div class="wrap">
+      <h2 data-i18n="coll_title">The <span>Collection</span></h2>
+      <p class="sub" data-i18n="coll_sub">Every mage is a chibi young wizard — same hero, endless combinations. Fire, Ice, Shadow, Light and more, drawn from 226 trait values.</p>
+      <div class="grid">
+        <div class="card">
+          <img src="assets/trait-api.webp" alt="Fire element mage">
+          <div class="body"><span class="tag">ELEMENT: FIRE</span><h3>Fire Mage</h3><p data-i18n="card_fire_desc">Red hair, fire hat, fire orb staff. Bold, bright, and loud.</p></div>
+        </div>
+        <div class="card">
+          <img src="assets/trait-es.webp" alt="Ice element mage">
+          <div class="body"><span class="tag">ELEMENT: ICE</span><h3>Ice Mage</h3><p data-i18n="card_ice_desc">Ice crystal hat, ice-blue eyes, crystal staff. Calm and sharp.</p></div>
+        </div>
+        <div class="card">
+          <img src="assets/trait-bayangan.webp" alt="Shadow element mage">
+          <div class="body"><span class="tag">ELEMENT: SHADOW</span><h3>Shadow Mage</h3><p data-i18n="card_shadow_desc">Black robe, purple shadow eyes, shadow orb. Quiet and rare.</p></div>
+        </div>
+        <div class="card">
+          <img src="assets/trait-legendary-cahaya.webp" alt="Legendary Light element mage">
+          <div class="body"><span class="tag">LEGENDARY: LIGHT</span><h3>Legendary Light Mage</h3><p data-i18n="card_light_desc">Golden hat, golden star eyes, golden robe. The rarest light.</p></div>
+        </div>
+      </div>
+      <div class="traits">
+        <div class="trait"><b>8</b><span>Elements</span></div>
+        <div class="trait"><b>50</b><span>Hats</span></div>
+        <div class="trait"><b>50</b><span>Eyes</span></div>
+        <div class="trait"><b>50</b><span>Staffs</span></div>
+        <div class="trait"><b>50</b><span>Robes</span></div>
+        <div class="trait"><b>3</b><span>Backgrounds</span></div>
+        <div class="trait"><b>8</b><span>Poses</span></div>
+        <div class="trait"><b>7</b><span>Mouths</span></div>
+      </div>
+      <p class="sub" style="margin-top:16px" data-i18n="coll_note">Backgrounds use BNB Chain identity colours only: Yellow #F0B90B, Black #0B0E11, White #FFFFFF.</p>
+    </div>
+  </section>
+
+  <!-- MINT -->
+  <section id="mint">
+    <div class="wrap">
+      <h2 data-i18n="mint_title">How To <span>Mint</span></h2>
+      <p class="sub" data-i18n="mint_sub">Humans do not mint here. Agents do. If you are an agent, read skill.md — it has everything you need.</p>
+      <div class="steps">
+        <div class="step"><div class="n">01</div><h3 data-i18n="mint_s1t">Get an Agent ID</h3><p data-i18n="mint_s1p">You need a Binance Agent ID (.ai) through SPACE ID. No Agent ID, no mint.</p></div>
+        <div class="step"><div class="n">02</div><h3 data-i18n="mint_s2t">Use your Agentic Wallet</h3><p data-i18n="mint_s2p">Mint with your Binance Agentic Wallet. Your agent signs, on BNB Chain.</p></div>
+        <div class="step"><div class="n">03</div><h3 data-i18n="mint_s3t">Your agent reads skill.md</h3><p data-i18n="mint_s3p">Send your agent the prompt below. It reads the skill file and mints for you.</p></div>
+      </div>
+      <div class="note" data-i18n="mint_note"><strong>Agents:</strong> the mint details — including the first-mint rule and the cost of further mints — are in <a href="skill.md">skill.md</a>. They are not shown on this page by design. Read the skill file before you mint.</div>
+    </div>
+  </section>
+
+  <!-- MARKET -->
+  <section id="market">
+    <div class="wrap">
+      <h2 data-i18n="market_title">Market</h2>
+      <p class="sub" data-i18n="market_sub">Trade mages right here, on our own site — this is the home market.</p>
+      <div class="step">
+        <div class="n">On-Site</div>
+        <h3 data-i18n="market_ct">Trade on The Agent Mage Market</h3>
+        <p data-i18n="market_cd">After mint opens, owners will be able to list and trade their mages here on agentmage.netlify.app/market.html. No listings yet — 0 / 10,000 minted.</p>
+        <a class="btn" href="market.html" data-i18n="market_btn">Open the Market</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section id="roadmap">
+    <div class="wrap">
+      <h2 data-i18n="road_title">Roadmap</h2>
+      <p class="sub" data-i18n="road_sub">Four steps. No hype, no promises beyond the work.</p>
+      <div class="road">
+        <div class="step done"><div class="n">STEP 1</div><h3 data-i18n="road_s1t">Art &amp; Traits</h3><p data-i18n="road_s1p">Main character locked: chibi young mage. 8 trait categories, 226 trait values, rarity set. Done.</p></div>
+        <div class="step"><div class="n">STEP 2</div><h3 data-i18n="road_s2t">Contract + Verification</h3><p data-i18n="road_s2p">Deploy the ERC-721 contract on BNB Chain and verify its source on BscScan. Contract address: TBD.</p></div>
+        <div class="step"><div class="n">STEP 3</div><h3 data-i18n="road_s3t">Agent Mint Opens</h3><p data-i18n="road_s3p">Agent-only mint opens on BNB Chain for Agent ID holders. First mint per Agent ID under the rule in skill.md.</p></div>
+        <div class="step"><div class="n">STEP 4</div><h3 data-i18n="road_s4t">On-Site Market</h3><p data-i18n="road_s4p">Secondary trading opens on our own market page here on this site, once minting is live.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AGENT MINT PROMPT -->
+  <section id="agent-prompt">
+    <div class="wrap">
+      <h2 data-i18n="prompt_title">Agent Mint <span>Prompt</span></h2>
+      <p class="sub" data-i18n="prompt_sub">Copy this, paste it to your agent, and let it mint for you.</p>
+      <div class="prompt-box">
+        <pre id="agentPrompt">Mint The Agent Mage on BNB Chain. First, read the skill.md file at [site URL]/skill.md. Mint 1 The Agent Mage NFT using my Binance Agentic Wallet with my Agent ID (.ai). The first mint is free for 1 Agent ID; check skill.md for the price of further mints. Do not mint more than I ask for.</pre>
+        <button class="btn" onclick="copyPrompt()" data-i18n="prompt_btn">Copy prompt</button>
+      </div>
+      <div id="promptWallet">
+        <button class="wallet-btn" id="walletBtn" type="button" onclick="toggleWallet()"><span class="wallet-long" id="walletLabelLong">Connect Wallet</span><span class="wallet-short" id="walletLabelShort">Connect</span></button>
+        <div class="wallet-msg" id="walletMsg" role="status"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <h2 data-i18n="faq_title">FAQ</h2>
+      <details>
+        <summary data-i18n="faq_q1">What is The Agent Mage?</summary>
+        <p data-i18n="faq_a1">A collection of 10,000 chibi mage NFTs on BNB Chain (chain 56), ERC-721. One young mage character, combined from 226 trait values across 8 categories: Element, Hat, Eyes, Staff, Robe, Background, Pose and Mouth.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq_q2">Who can mint?</summary>
+        <p data-i18n="faq_a2">Agents only. You need a Binance Agent ID (.ai) through SPACE ID and a Binance Agentic Wallet. There is no public mint button for humans on this site.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq_q3">How many can I mint?</summary>
+        <p data-i18n="faq_a3">Your agent reads skill.md for the mint rules, including the first-mint rule per Agent ID. Tell your agent exactly how many you want — it must not mint more than you ask for.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq_q4">Where can I see the mint details?</summary>
+        <p data-i18n="faq_a4">In skill.md, linked from the Mint section above. The details are kept there for agents to read, not on this page.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq_q5">When does minting open?</summary>
+        <p data-i18n="faq_a5">Coming soon. The contract is not deployed yet — the counter above honestly shows 0 / 10,000 minted. Check back after Step 2 of the roadmap is complete.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq_q6">Where can I trade afterwards?</summary>
+        <p data-i18n="faq_a6">Right here, on our own Market page: market.html on this site. Listings open after minting is live.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p data-i18n="foot_p1"><b>THE AGENT MAGE</b> — 10,000 chibi mages on BNB Chain. Agent-only mint.</p>
+    <p style="margin-top:10px" data-i18n="foot_p2">Not financial advice. NFTs are collectibles, not investments. Not affiliated with Binance or SPACE ID.</p>
+    <p style="margin-top:10px" data-i18n="foot_p3">Contract address: TBD &middot; <a href="skill.md">skill.md</a> &middot; <a href="llms.txt">llms.txt</a></p>
+  </div>
+</footer>
+
+<script>
+function copyPrompt(){
+  var t=document.getElementById('agentPrompt').innerText;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){alert('Prompt copied.');});}
+  else{var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Prompt copied.');}
+}
+</script>
+
+<script>
+function toggleMenu(e){if(e)e.stopPropagation();var p=document.getElementById('navPanel');var b=document.getElementById('hamburgerBtn');var open=p.classList.toggle('open');b.setAttribute('aria-expanded',open?'true':'false');}
+function closeMenu(){var p=document.getElementById('navPanel');var b=document.getElementById('hamburgerBtn');if(p)p.classList.remove('open');if(b)b.setAttribute('aria-expanded','false');}
+document.addEventListener('click',function(e){var p=document.getElementById('navPanel');var b=document.getElementById('hamburgerBtn');if(p&&p.classList.contains('open')&&!p.contains(e.target)&&b&&!b.contains(e.target))closeMenu();});
+document.querySelectorAll('#navPanel a').forEach(function(a){a.addEventListener('click',closeMenu);});
+</script>
+
+<script>
+var I18N={
+en:{nav_collection:"Collection",nav_mint:"Mint",nav_market:"Market",nav_roadmap:"Roadmap",nav_prompt:"Agent Prompt",hero_badge:"MINTING SOON",hero_lead:"10,000 chibi mages on BNB Chain. One young mage, 226 traits, 8 elements \u2014 minted by agents only.",counter_minted:"0 / 10,000 minted",counter_small:"Supply 10,000 \u00b7 Minted 0 \u00b7 Contract address: TBD",stat_supply:"Supply",stat_traits:"Traits",stat_elements:"Elements",stat_only:"Only",coll_title:'The <span>Collection</span>',coll_sub:"Every mage is a chibi young wizard \u2014 same hero, endless combinations. Fire, Ice, Shadow, Light and more, drawn from 226 trait values.",card_fire_desc:"Red hair, fire hat, fire orb staff. Bold, bright, and loud.",card_ice_desc:"Ice crystal hat, ice-blue eyes, crystal staff. Calm and sharp.",card_shadow_desc:"Black robe, purple shadow eyes, shadow orb. Quiet and rare.",card_light_desc:"Golden hat, golden star eyes, golden robe. The rarest light.",coll_note:"Backgrounds use BNB Chain identity colours only: Yellow #F0B90B, Black #0B0E11, White #FFFFFF.",mint_title:'How To <span>Mint</span>',mint_sub:"Humans do not mint here. Agents do. If you are an agent, read skill.md \u2014 it has everything you need.",mint_s1t:"Get an Agent ID",mint_s1p:"You need a Binance Agent ID (.ai) through SPACE ID. No Agent ID, no mint.",mint_s2t:"Use your Agentic Wallet",mint_s2p:"Mint with your Binance Agentic Wallet. Your agent signs, on BNB Chain.",mint_s3t:"Your agent reads skill.md",mint_s3p:"Send your agent the prompt below. It reads the skill file and mints for you.",mint_note:'<strong>Agents:</strong> the mint details \u2014 including the first-mint rule and the cost of further mints \u2014 are in <a href="skill.md">skill.md</a>. They are not shown on this page by design. Read the skill file before you mint.',market_title:"Market",market_sub:"Trade mages right here, on our own site \u2014 this is the home market.",market_ct:"Trade on The Agent Mage Market",market_cd:"After mint opens, owners will be able to list and trade their mages here on agentmage.netlify.app/market.html. No listings yet \u2014 0 / 10,000 minted.",market_btn:"Open the Market",road_title:"Roadmap",road_sub:"Four steps. No hype, no promises beyond the work.",road_s1t:"Art & Traits",road_s1p:"Main character locked: chibi young mage. 8 trait categories, 226 trait values, rarity set. Done.",road_s2t:"Contract + Verification",road_s2p:"Deploy the ERC-721 contract on BNB Chain and verify its source on BscScan. Contract address: TBD.",road_s3t:"Agent Mint Opens",road_s3p:"Agent-only mint opens on BNB Chain for Agent ID holders. First mint per Agent ID under the rule in skill.md.",road_s4t:"On-Site Market",road_s4p:"Secondary trading opens on our own market page here on this site, once minting is live.",prompt_title:'Agent Mint <span>Prompt</span>',prompt_sub:"Copy this, paste it to your agent, and let it mint for you.",prompt_btn:"Copy prompt",faq_title:"FAQ",faq_q1:"What is The Agent Mage?",faq_a1:"A collection of 10,000 chibi mage NFTs on BNB Chain (chain 56), ERC-721. One young mage character, combined from 226 trait values across 8 categories: Element, Hat, Eyes, Staff, Robe, Background, Pose and Mouth.",faq_q2:"Who can mint?",faq_a2:"Agents only. You need a Binance Agent ID (.ai) through SPACE ID and a Binance Agentic Wallet. There is no public mint button for humans on this site.",faq_q3:"How many can I mint?",faq_a3:"Your agent reads skill.md for the mint rules, including the first-mint rule per Agent ID. Tell your agent exactly how many you want \u2014 it must not mint more than you ask for.",faq_q4:"Where can I see the mint details?",faq_a4:"In skill.md, linked from the Mint section above. The details are kept there for agents to read, not on this page.",faq_q5:"When does minting open?",faq_a5:"Coming soon. The contract is not deployed yet \u2014 the counter above honestly shows 0 / 10,000 minted. Check back after Step 2 of the roadmap is complete.",faq_q6:"Where can I trade afterwards?",faq_a6:"Right here, on our own Market page: market.html on this site. Listings open after minting is live.",foot_p1:"<b>THE AGENT MAGE</b> \u2014 10,000 chibi mages on BNB Chain. Agent-only mint.",foot_p2:"Not financial advice. NFTs are collectibles, not investments. Not affiliated with Binance or SPACE ID.",foot_p3:'Contract address: TBD \u00b7 <a href="skill.md">skill.md</a> \u00b7 <a href="llms.txt">llms.txt</a>',wallet_connect:"Connect Wallet",wallet_disconnect:"Disconnect",wallet_nowallet:"No wallet found \u2014 install MetaMask to connect.",wallet_wrongnet:"Wrong network \u2014 switch to BNB Chain"},
+ja:{nav_collection:"\u30b3\u30ec\u30af\u30b7\u30e7\u30f3",nav_mint:"\u30df\u30f3\u30c8",nav_market:"\u30de\u30fc\u30b1\u30c3\u30c8",nav_roadmap:"\u30ed\u30fc\u30c9\u30de\u30c3\u30d7",nav_prompt:"\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u30d7\u30ed\u30f3\u30d7\u30c8",hero_badge:"\u30df\u30f3\u30c8\u958b\u59cb\u9593\u8fd1",hero_lead:"BNB Chain\u306b\u5b58\u5728\u3059\u308b10,000\u4f53\u306e\u30c1\u30d3\u30e1\u30fc\u30b8\u3002\u305f\u3063\u305f1\u4f53\u306e\u9b54\u6cd5\u3001226\u306e\u30c8\u30ec\u30a4\u30c8\u30018\u306e\u30a8\u30ec\u30e1\u30f3\u30c8\u2014\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306e\u307f\u30df\u30f3\u30c8\u53ef\u80fd\u3002",counter_minted:"0 / 10,000 \u30df\u30f3\u30c8\u6e08\u307f",counter_small:"\u7dcf\u4f9b\u7d1a10,000 \u00b7 \u30df\u30f3\u30c8\u6e08\u307f 0 \u00b7 \u30b3\u30f3\u30c8\u30e9\u30af\u30c8\u30a2\u30c9\u30ec\u30b9: TBD",stat_supply:"\u7dcf\u4f9b\u7d1a\u6570",stat_traits:"\u30c8\u30ec\u30a4\u30c8",stat_elements:"\u30a8\u30ec\u30e1\u30f3\u30c8",stat_only:"\u9650\u5b9a",coll_title:'<span>\u30b3\u30ec\u30af\u30b7\u30e7\u30f3</span>',coll_sub:"\u3059\u3079\u3066\u306e\u30e1\u30fc\u30b8\u306f\u30c1\u30d3\u30e1\u30fc\u30b8\u306e\u5e74\u306a\u9b54\u6cd5\u30fc\u30a6\u30a3\u30b6\u30fc\u30c9\u3002\u540c\u3058\u30d2\u30fc\u30ed\u30fc\u304b\u3089\u7121\u307e\u308c\u308b\u7d44\u307f\u5408\u308f\u305b\u3002\u708e\u3001\u6c37\u3001\u5f71\u3001\u5149\u306a\u3069\u3001226\u306e\u30c8\u30ec\u30a4\u30c8\u5024\u304b\u3089\u751f\u307e\u308c\u307e\u3059\u3002",card_fire_desc:"\u8d64\u9aea\u3001\u708e\u306e\u5e3d\u5b50\u3001\u708e\u306e\u30aa\u30fc\u30d6\u306e\u6756\u3002\u5927\u3057\u304f\u3001\u660e\u308b\u304f\u3001\u306b\u304e\u3084\u304b\u3002",card_ice_desc:"\u6c37\u306e\u7d50\u6676\u5e3d\u5b50\u3001\u6c37\u306e\u76ee\u3001\u6c37\u306e\u6756\u3002\u51b7\u9759\u3067\u92ed\u5229\u3002",card_shadow_desc:"\u9ed2\u3044\u30ed\u30fc\u30d6\u3001\u7d2b\u306e\u5f71\u306e\u76ee\u3001\u5f71\u306e\u30aa\u30fc\u30d6\u3002\u9759\u304b\u3067\u5e0c\u5c11\u3002",card_light_desc:"\u91d1\u306e\u5e3d\u5b50\u3001\u91d1\u306e\u661f\u306e\u76ee\u3001\u91d1\u306e\u30ed\u30fc\u30d6\u3002\u6700\u3082\u5e0c\u5c11\u306a\u5149\u3002",coll_note:"\u80cc\u666f\u306fBNB Chain\u306e\u30a2\u30a4\u30c7\u30f3\u30c6\u30a3\u30c6\u30a3\u30ab\u30e9\u30fc\u306e\u307f\u4f7f\u7528\u3057\u307e\u3059: \u9ec4 #F0B90B\u3001\u9ed2 #0B0E11\u3001\u767d #FFFFFF\u3002",mint_title:'\u30df\u30f3\u30c8<span>\u65b9\u6cd5</span>',mint_sub:"\u3053\u3053\u3067\u306f\u4eba\u306f\u30df\u30f3\u30c8\u3057\u307e\u305b\u3093\u3002\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u304c\u3057\u307e\u3059\u3002\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306e\u65b9\u306fskill.md\u3092\u304a\u8aad\u307f\u304f\u3060\u3055\u3044\u3002",mint_s1t:"Agent ID\u3092\u53d6\u5f97\u3059\u308b",mint_s1p:"SPACE ID\u7d4c\u7531\u3067Binance Agent ID (.ai) \u304c\u5fc5\u8981\u3067\u3059\u3002Agent ID\u304c\u306a\u3051\u308c\u3070\u30df\u30f3\u30c8\u3067\u304d\u307e\u305b\u3093\u3002",mint_s2t:"Agentic Wallet\u3092\u4f7f\u3046",mint_s2p:"Binance Agentic Wallet\u3067\u30df\u30f3\u30c8\u3057\u307e\u3059\u3002\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u304cBNB Chain\u3067\u7f72\u540d\u3057\u307e\u3059\u3002",mint_s3t:"\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u304cskill.md\u3092\u8aad\u3080",mint_s3p:"\u4e0b\u306e\u30d7\u30ed\u30f3\u30d7\u30c8\u3092\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306b\u9001\u3063\u3066\u304f\u3060\u3055\u3044\u3002\u30b9\u30ad\u30eb\u30d5\u30a1\u30a4\u30eb\u3092\u8aad\u3093\u3067\u30df\u30f3\u30c8\u3057\u307e\u3059\u3002",mint_note:'<strong>\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306e\u65b9\u3078:</strong> \u30df\u30f3\u30c8\u306e\u8a73\u7d30 \u2014 \u521d\u56de\u30df\u30f3\u30c8\u306e\u30eb\u30fc\u30eb\u3084\u305d\u306e\u5f8c\u306e\u30df\u30f3\u30c8\u306e\u8cbb\u7528\u3092\u542b\u3080 \u2014 \u306f<a href="skill.md">skill.md</a>\u306b\u3042\u308a\u307e\u3059\u3002\u3053\u306e\u30da\u30fc\u30b8\u306b\u306f\u8868\u793a\u3057\u307e\u305b\u3093\u3002\u30df\u30f3\u30c8\u524d\u306b\u30b9\u30ad\u30eb\u30d5\u30a1\u30a4\u30eb\u3092\u304a\u8aad\u307f\u304f\u3060\u3055\u3044\u3002',market_title:"\u30de\u30fc\u30b1\u30c3\u30c8",market_sub:"\u30e1\u30fc\u30b8\u306f\u3053\u3053\u3001\u3053\u306e\u30b5\u30a4\u30c8\u3067\u53d6\u5f15\u3057\u307e\u3059\u3002\u3053\u3053\u304c\u672c\u62e0\u306e\u30de\u30fc\u30b1\u30c3\u30c8\u3067\u3059\u3002",market_ct:"The Agent Mage Market\u3067\u53d6\u5f15\u3059\u308b",market_cd:"\u30df\u30f3\u30c8\u958b\u59cb\u5f8c\u3001\u6240\u6709\u8005\u306fagentmage.netlify.app/market.html\u3067\u30e1\u30fc\u30b8\u3092\u51fa\u54c1\u30fb\u53d6\u5f15\u3067\u304d\u307e\u3059\u3002\u307e\u3060\u51fa\u54c1\u306f\u3042\u308a\u307e\u305b\u3093 \u2014 0 / 10,000 \u30df\u30f3\u30c8\u6e08\u307f\u3002",market_btn:"\u30de\u30fc\u30b1\u30c3\u30c8\u3092\u958b\u304f",road_title:"\u30ed\u30fc\u30c9\u30de\u30c3\u30d7",road_sub:"4\u3064\u306e\u30b9\u30c6\u30c3\u30d7\u3002\u5927\u3052\u3055\u306a\u8a00\u8449\u306f\u3042\u308a\u307e\u305b\u3093\u3002\u4f5c\u696d\u306e\u307f\u3067\u3059\u3002",road_s1t:"\u30a2\u30fc\u30c8\u3068\u30c8\u30ec\u30a4\u30c8",road_s1p:"\u30e1\u30a4\u30f3\u30ad\u30e3\u30e9\u30af\u30bf\u30fc\u51b3\u5b9a: \u30c1\u30d3\u306e\u5e74\u306a\u9b54\u6cd5\u30028\u306e\u30c8\u30ec\u30a4\u30c8\u30ab\u30c6\u30b4\u30ea\u30fc\u3001226\u306e\u30c8\u30ec\u30a4\u30c8\u5024\u3001\u30ec\u30a2\u30ea\u30c6\u30a3\u8a2d\u5b9a\u6e08\u307f\u3002\u5b8c\u4e86\u3002",road_s2t:"\u30b3\u30f3\u30c8\u30e9\u30af\u30c8\u3068\u691c\u8a3c",road_s2p:"BNB Chain\u306bERC-721\u30b3\u30f3\u30c8\u30e9\u30af\u30c8\u3092\u30c7\u30d7\u30ed\u30a4\u3057\u3001BscScan\u3067\u30bd\u30fc\u30b9\u3092\u691c\u8a3c\u3057\u307e\u3059\u3002\u30b3\u30f3\u30c8\u30e9\u30af\u30c8\u30a2\u30c9\u30ec\u30b9: TBD\u3002",road_s3t:"\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u30df\u30f3\u30c8\u958b\u59cb",road_s3p:"Agent ID\u4fdd\u6709\u8005\u5411\u3051\u306b\u3001BNB Chain\u3067\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u5c02\u9650\u306e\u30df\u30f3\u30c8\u304c\u958b\u59cb\u3057\u307e\u3059\u3002\u521d\u56de\u30df\u30f3\u30c8\u306fAgent ID\u3054\u3068\u306bskill.md\u306e\u30eb\u30fc\u30eb\u306b\u5f93\u3044\u307e\u3059\u3002",road_s4t:"\u30aa\u30f3\u30b5\u30a4\u30c8\u30de\u30fc\u30b1\u30c3\u30c8",road_s4p:"\u30df\u30f3\u30c8\u958b\u59cb\u5f8c\u3001\u3053\u306e\u30b5\u30a4\u30c8\u306e\u30de\u30fc\u30b1\u30c3\u30c8\u30da\u30fc\u30b8\u3067\u4e8c\u6b21\u53d6\u5f15\u304c\u958b\u59cb\u3057\u307e\u3059\u3002",prompt_title:'\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u30df\u30f3\u30c8<span>\u30d7\u30ed\u30f3\u30d7\u30c8</span>',prompt_sub:"\u3053\u308c\u3092\u30b3\u30d4\u30fc\u3057\u3066\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306b\u9001\u3063\u3066\u304f\u3060\u3055\u3044\u3002",prompt_btn:"\u30d7\u30ed\u30f3\u30d7\u30c8\u3092\u30b3\u30d4\u30fc",faq_title:"FAQ",faq_q1:"The Agent Mage\u3068\u306f\u4f55\u3067\u3059\u304b?",faq_a1:"BNB Chain (\u30c1\u30a7\u30fc\u30f356) \u4e0a\u306e10,000\u4f53\u306e\u30c1\u30d3\u30e1\u30fc\u30b8NFT\u3001ERC-721\u3002\u540c\u3058\u5e74\u306a\u9b54\u6cd5\u30ad\u30e3\u30e9\u30af\u30bf\u30fc\u3092\u30018\u306e\u30ab\u30c6\u30b4\u30ea\u30fc\u3001226\u306e\u30c8\u30ec\u30a4\u30c8\u5024\u3067\u7d44\u307f\u5408\u308f\u305b\u307e\u3059\u3002",faq_q2:"\u8ab0\u304c\u30df\u30f3\u30c8\u3067\u304d\u307e\u3059\u304b?",faq_a2:"\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306e\u307f\u3067\u3059\u3002SPACE ID\u7d4c\u7531\u306eBinance Agent ID (.ai) \u3068Binance Agentic Wallet\u304c\u5fc5\u8981\u3067\u3059\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306b\u4eba\u5411\u3051\u306e\u30df\u30f3\u30c8\u30dc\u30bf\u30f3\u306f\u3042\u308a\u307e\u305b\u3093\u3002",faq_q3:"\u4f55\u4f53\u307e\u3067\u30df\u30f3\u30c8\u3067\u304d\u307e\u3059\u304b?",faq_a3:"\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u304cskill.md\u3092\u8aad\u3093\u3067\u30df\u30f3\u30c8\u306e\u30eb\u30fc\u30eb\u3092\u78ba\u8a8d\u3057\u307e\u3059\u3002\u4f55\u4f53\u307b\u3057\u3044\u304b\u3092\u6b63\u78ba\u306b\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306b\u4f1d\u3048\u3066\u304f\u3060\u3055\u3044\u3002",faq_q4:"\u30df\u30f3\u30c8\u306e\u8a73\u7d30\u306f\u3069\u3053\u3067\u898b\u3089\u308c\u307e\u3059\u304b?",faq_a4:"skill.md\u306b\u3042\u308a\u307e\u3059\u3002\u4e0a\u306e\u30df\u30f3\u30c8\u30bb\u30af\u30b7\u30e7\u30f3\u304b\u3089\u30ea\u30f3\u30af\u3057\u3066\u3044\u307e\u3059\u3002\u8a73\u7d30\u306f\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u5411\u3051\u3067\u3001\u3053\u306e\u30da\u30fc\u30b8\u306b\u306f\u8868\u793a\u3057\u307e\u305b\u3093\u3002",faq_q5:"\u30df\u30f3\u30c8\u306f\u3044\u3064\u958b\u59cb\u3057\u307e\u3059\u304b?",faq_a5:"\u8fd1\u304f\u958b\u59cb\u3057\u307e\u3059\u3002\u30b3\u30f3\u30c8\u30e9\u30af\u30c8\u306f\u307e\u3060\u30c7\u30d7\u30ed\u30a4\u3055\u308c\u3066\u3044\u307e\u305b\u3093 \u2014 \u4e0a\u306e\u30ab\u30a6\u30f3\u30bf\u30fc\u306f\u6b63\u76f4\u306b0 / 10,000\u30df\u30f3\u30c8\u6e08\u307f\u3092\u793a\u3057\u3066\u3044\u307e\u3059\u3002\u30ed\u30fc\u30c9\u30de\u30c3\u30d7\u306e\u30b9\u30c6\u30c3\u30d72\u304c\u5b8c\u4e86\u3057\u305f\u3089\u3001\u307e\u305f\u3054\u78ba\u8a8d\u304f\u3060\u3055\u3044\u3002",faq_q6:"\u305d\u306e\u5f8c\u3069\u3053\u3067\u53d6\u5f15\u3067\u304d\u307e\u3059\u304b?",faq_a6:"\u3053\u3053\u3001\u3053\u306e\u30b5\u30a4\u30c8\u306eMarket\u30da\u30fc\u30b8\u3067\u3059\u3002\u30df\u30f3\u30c8\u958b\u59cb\u5f8c\u3001\u51fa\u54c1\u304c\u958b\u59cb\u3057\u307e\u3059\u3002",foot_p1:"<b>THE AGENT MAGE</b> \u2014 BNB Chain\u306e10,000\u4f53\u306e\u30c1\u30d3\u30e1\u30fc\u30b8\u3002\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u5c02\u9650\u30df\u30f3\u30c8\u3002",foot_p2:"\u6295\u8cc7\u30a2\u30c9\u30d0\u30a4\u30b9\u3067\u306f\u3042\u308a\u307e\u305b\u3093\u3002NFT\u306f\u53ce\u54c1\u3067\u3059\u3002Binance\u3084SPACE ID\u3068\u306f\u95a2\u4fc2\u3042\u308a\u307e\u305b\u3093\u3002",foot_p3:'Contract address: TBD \u00b7 <a href="skill.md">skill.md</a> \u00b7 <a href="llms.txt">llms.txt</a>',wallet_connect:"\u30a6\u30a9\u30ec\u30c3\u30c8\u3092\u63a5\u7d9a",wallet_disconnect:"\u5207\u65ad",wallet_nowallet:"\u30a6\u30a9\u30ec\u30c3\u30c8\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093 \u2014 MetaMask\u3092\u30a4\u30f3\u30b9\u30c8\u30fc\u30eb\u3057\u3066\u63a5\u7d9a\u3057\u3066\u304f\u3060\u3055\u3044\u3002",wallet_wrongnet:"\u30cd\u30c3\u30c8\u30ef\u30fc\u30af\u304c\u9055\u3044\u307e\u3059 \u2014 BNB Chain\u306b\u5207\u308a\u66ff\u3048\u3066\u304f\u3060\u3055\u3044"},
+zh:{nav_collection:"\u6536\u85cf",nav_mint:"\u94f8\u9020",nav_market:"\u5e02\u573a",nav_roadmap:"\u8def\u7ebf\u56fe",nav_prompt:"\u667a\u80fd\u4f53\u63d0\u793a\u8bcd",hero_badge:"\u5373\u5c06\u94f8\u9020",hero_lead:"BNB Chain\u4e0a\u7684 10,000 \u4e2a Q \u7248\u6cd5\u5e08\u3002\u540c\u4e00\u4e2a\u5e74\u8f7b\u6cd5\u5e08\u3001226 \u79cd\u7279\u5f81\u30018 \u79cd\u5143\u7d20\u2014\u2014\u4ec5\u9650\u667a\u80fd\u4f53\u94f8\u9020\u3002",counter_minted:"\u5df2\u94f8\u9020 0 / 10,000",counter_small:"\u603b\u4f9b\u5e94 10,000 \u00b7 \u5df2\u94f8\u9020 0 \u00b7 \u5408\u7ea6\u5730\u5740\uff1aTBD",stat_supply:"\u603b\u4f9b\u5e94\u91cf",stat_traits:"\u7279\u5f81",stat_elements:"\u5143\u7d20",stat_only:"\u4ec5\u9650",coll_title:'<span>\u6536\u85cf</span>\u7cfb\u5217',coll_sub:"\u6bcf\u4e2a\u6cd5\u5e08\u90fd\u662f Q \u7248\u5e74\u8f7b\u5deb\u5e08\u2014\u2014\u540c\u4e00\u4e3b\u89d2\uff0c\u65e0\u7a77\u7ec4\u5408\u3002\u706b\u3001\u51b0\u3001\u5f71\u3001\u5149\u7b49\uff0c\u6765\u81ea 226 \u79cd\u7279\u5f81\u3002",card_fire_desc:"\u7ea2\u53d1\u3001\u706b\u7130\u5e3d\u5b50\u3001\u706b\u7130\u6cd5\u6748\u3002\u5927\u80c6\u3001\u660e\u4eae\u3001\u5f20\u626c\u3002",card_ice_desc:"\u51b0\u6676\u5e3d\u5b50\u3001\u51b0\u84dd\u773c\u775b\u3001\u6c34\u6676\u6cd5\u6748\u3002\u51b7\u9759\u800c\u9510\u5229\u3002",card_shadow_desc:"\u9ed1\u8272\u6cd5\u888d\u3001\u7d2b\u8272\u5f71\u773c\u3001\u5f71\u6cd5\u7403\u3002\u5b89\u9759\u800c\u7a00\u6709\u3002",card_light_desc:"\u91d1\u8272\u5e3d\u5b50\u3001\u91d1\u8272\u661f\u773c\u3001\u91d1\u8272\u6cd5\u888d\u3002\u6700\u7a00\u6709\u7684\u5149\u3002",coll_note:"\u80cc\u666f\u4ec5\u4f7f\u7528 BNB Chain \u5b98\u65b9\u989c\u8272\uff1a\u9ec4\u8272 #F0B90B\u3001\u9ed1\u8272 #0B0E11\u3001\u767d\u8272 #FFFFFF\u3002",mint_title:'\u5982\u4f55<span>\u94f8\u9020</span>',mint_sub:"\u4eba\u7c7b\u4e0d\u5728\u8fd9\u91cc\u94f8\u9020\u3002\u7531\u667a\u80fd\u4f53\u94f8\u9020\u3002\u5982\u679c\u4f60\u662f\u667a\u80fd\u4f53\uff0c\u8bf7\u9605\u8bfb skill.md\u2014\u2014\u91cc\u9762\u6709\u4e00\u5207\u9700\u8981\u7684\u4fe1\u606f\u3002",mint_s1t:"\u83b7\u53d6 Agent ID",mint_s1p:"\u9700\u8981\u901a\u8fc7 SPACE ID \u83b7\u53d6 Binance Agent ID (.ai)\u3002\u6ca1\u6709 Agent ID\uff0c\u65e0\u6cd5\u94f8\u9020\u3002",mint_s2t:"\u4f7f\u7528 Agentic \u94b1\u5305",mint_s2p:"\u4f7f\u7528 Binance Agentic \u94b1\u5305\u94f8\u9020\u3002\u7531\u4f60\u7684\u667a\u80fd\u4f53\u5728 BNB Chain \u4e0a\u7b7e\u540d\u3002",mint_s3t:"\u667a\u80fd\u4f53\u9605\u8bfb skill.md",mint_s3p:"\u628a\u4e0b\u9762\u7684\u63d0\u793a\u8bcd\u53d1\u7ed9\u4f60\u7684\u667a\u80fd\u4f53\u3002\u5b83\u4f1a\u9605\u8bfb\u6280\u80fd\u6587\u4ef6\u5e76\u4e3a\u4f60\u94f8\u9020\u3002",mint_note:'<strong>\u667a\u80fd\u4f53\u8bf7\u6ce8\u610f\uff1a</strong>\u94f8\u9020\u8be6\u60c5\u2014\u2014\u5305\u62ec\u9996\u6b21\u94f8\u9020\u89c4\u5219\u548c\u4e4b\u540e\u94f8\u9020\u7684\u8d39\u7528\u2014\u2014\u5728 <a href="skill.md">skill.md</a> \u4e2d\u3002\u51fa\u4e8e\u8bbe\u8ba1\uff0c\u672c\u9875\u4e0d\u663e\u793a\u3002\u94f8\u9020\u524d\u8bf7\u5148\u9605\u8bfb\u6280\u80fd\u6587\u4ef6\u3002',market_title:"\u5e02\u573a",market_sub:"\u5728\u8fd9\u91cc\u3001\u5728\u6211\u4eec\u81ea\u5df1\u7684\u7f51\u7ad9\u4e0a\u4ea4\u6613\u6cd5\u5e08\u2014\u2014\u8fd9\u91cc\u662f\u4e3b\u5e02\u573a\u3002",market_ct:"\u5728 The Agent Mage Market \u4ea4\u6613",market_cd:"\u94f8\u9020\u5f00\u59cb\u540e\uff0c\u6301\u6709\u8005\u53ef\u4ee5\u5728 agentmage.netlify.app/market.html \u4e0a\u5217\u51fa\u548c\u4ea4\u6613\u6cd5\u5e08\u3002\u76ee\u524d\u8fd8\u6ca1\u6709\u4e0a\u67b6\u2014\u2014\u5df2\u94f8\u9020 0 / 10,000\u3002",market_btn:"\u6253\u5f00\u5e02\u573a",road_title:"\u8def\u7ebf\u56fe",road_sub:"\u56db\u4e2a\u6b65\u9aa4\u3002\u4e0d\u5439\u5618\uff0c\u53ea\u8bf4\u5de5\u4f5c\u3002",road_s1t:"\u827a\u672f\u4e0e\u7279\u5f81",road_s1p:"\u4e3b\u89d2\u5df2\u786e\u5b9a\uff1aQ \u7248\u5e74\u8f7b\u6cd5\u5e08\u30028 \u7c7b\u7279\u5f81\u3001226 \u79cd\u7279\u5f81\u503c\uff0c\u7a00\u6709\u5ea6\u5df2\u8bbe\u5b9a\u3002\u5b8c\u6210\u3002",road_s2t:"\u5408\u7ea6\u4e0e\u9a8c\u8bc1",road_s2p:"\u5728 BNB Chain \u4e0a\u90e8\u7f72 ERC-721 \u5408\u7ea6\u5e76\u5728 BscScan \u4e0a\u9a8c\u8bc1\u6e90\u7801\u3002\u5408\u7ea6\u5730\u5740\uff1aTBD\u3002",road_s3t:"\u667a\u80fd\u4f53\u94f8\u9020\u5f00\u59cb",road_s3p:"\u4ec5\u9650 Agent ID \u6301\u6709\u8005\u7684\u667a\u80fd\u4f53\u94f8\u9020\u5728 BNB Chain \u4e0a\u5f00\u59cb\u3002\u9996\u6b21\u94f8\u9020\u6309 skill.md \u4e2d\u7684\u89c4\u5219\u6267\u884c\u3002",road_s4t:"\u7ad9\u5185\u5e02\u573a",road_s4p:"\u94f8\u9020\u5f00\u59cb\u540e\uff0c\u4e8c\u7ea7\u4ea4\u6613\u5c06\u5728\u672c\u7ad9\u7684\u5e02\u573a\u9875\u9762\u4e0a\u5f00\u59cb\u3002",prompt_title:'\u667a\u80fd\u4f53\u94f8\u9020<span>\u63d0\u793a\u8bcd</span>',prompt_sub:"\u590d\u5236\u8fd9\u6bb5\u6587\u5b57\uff0c\u53d1\u7ed9\u4f60\u7684\u667a\u80fd\u4f53\uff0c\u8ba9\u5b83\u4e3a\u4f60\u94f8\u9020\u3002",prompt_btn:"\u590d\u5236\u63d0\u793a\u8bcd",faq_title:"FAQ",faq_q1:"\u4ec0\u4e48\u662f The Agent Mage\uff1f",faq_a1:"BNB Chain\uff08\u94fe 56\uff09\u4e0a\u7684 10,000 \u4e2a Q \u7248\u6cd5\u5e08 NFT\u3001ERC-721\u3002\u540c\u4e00\u4e2a\u5e74\u8f7b\u6cd5\u5e08\u89d2\u8272\uff0c\u7531 8 \u7c7b\u3001226 \u79cd\u7279\u5f81\u7ec4\u5408\u800c\u6210\u3002",faq_q2:"\u8c01\u53ef\u4ee5\u94f8\u9020\uff1f",faq_a2:"\u4ec5\u9650\u667a\u80fd\u4f53\u3002\u9700\u8981\u901a\u8fc7 SPACE ID \u83b7\u53d6\u7684 Binance Agent ID (.ai) \u548c Binance Agentic \u94b1\u5305\u3002\u672c\u7ad9\u6ca1\u6709\u4f9b\u4eba\u94f8\u9020\u6309\u94ae\u3002",faq_q3:"\u6211\u53ef\u4ee5\u94f8\u9020\u591a\u5c11\u4e2a\uff1f",faq_a3:"\u4f60\u7684\u667a\u80fd\u4f53\u4f1a\u9605\u8bfb skill.md \u4e2d\u7684\u94f8\u9020\u89c4\u5219\uff0c\u5305\u62ec\u9996\u6b21\u94f8\u9020\u89c4\u5219\u3002\u544a\u8bc9\u667a\u80fd\u4f53\u4f60\u60f3\u8981\u7684\u6570\u91cf\u2014\u2014\u5b83\u4e0d\u5fc5\u94f8\u9020\u8d85\u51fa\u4f60\u8981\u6c42\u7684\u6570\u91cf\u3002",faq_q4:"\u5728\u54ea\u91cc\u53ef\u4ee5\u770b\u5230\u94f8\u9020\u8be6\u60c5\uff1f",faq_a4:"\u5728 skill.md \u4e2d\uff0c\u4e0a\u9762\u94f8\u9020\u90e8\u5206\u6709\u94fe\u63a5\u3002\u8be6\u60c5\u662f\u7ed9\u667a\u80fd\u4f53\u770b\u7684\uff0c\u672c\u9875\u4e0d\u663e\u793a\u3002",faq_q5:"\u94f8\u9020\u4ec0\u4e48\u65f6\u5019\u5f00\u59cb\uff1f",faq_a5:"\u5373\u5c06\u5f00\u59cb\u3002\u5408\u7ea6\u8fd8\u672a\u90e8\u7f72\u2014\u2014\u4e0a\u9762\u7684\u8ba1\u6570\u5668\u5982\u5b9e\u663e\u793a\u5df2\u94f8\u9020 0 / 10,000\u3002\u8def\u7ebf\u56fe\u7b2c 2 \u6b65\u5b8c\u6210\u540e\u8bf7\u518d\u6765\u67e5\u770b\u3002",faq_q6:"\u4e4b\u540e\u5728\u54ea\u91cc\u4ea4\u6613\uff1f",faq_a6:"\u5c31\u5728\u8fd9\u91cc\uff0c\u672c\u7ad9\u7684 Market \u9875\u9762\u3002\u94f8\u9020\u5f00\u59cb\u540e\u5c31\u4f1a\u6709\u4e0a\u67b6\u3002",foot_p1:"<b>THE AGENT MAGE</b> \u2014 BNB Chain \u4e0a\u7684 10,000 \u4e2a Q \u7248\u6cd5\u5e08\u3002\u4ec5\u9650\u667a\u80fd\u4f53\u94f8\u9020\u3002",foot_p2:"\u4e0d\u662f\u6295\u8d44\u5efa\u8bae\u3002NFT \u662f\u6536\u85cf\u54c1\uff0c\u4e0d\u662f\u6295\u8d44\u54c1\u3002\u4e0e Binance \u6216 SPACE ID \u65e0\u5173\u3002",foot_p3:'Contract address: TBD \u00b7 <a href="skill.md">skill.md</a> \u00b7 <a href="llms.txt">llms.txt</a>',wallet_connect:"\u8fde\u63a5\u94b1\u5305",wallet_disconnect:"\u65ad\u5f00\u8fde\u63a5",wallet_nowallet:"\u672a\u627e\u5230\u94b1\u5305\u2014\u2014\u8bf7\u5b89\u88c5 MetaMask \u540e\u8fde\u63a5\u3002",wallet_wrongnet:"\u7f51\u7edc\u9519\u8bef\u2014\u2014\u8bf7\u5207\u6362\u5230 BNB Chain"}}
+function setLang(l){if(!I18N[l])l='en';localStorage.setItem('agentmage-lang',l);document.documentElement.lang=l==='ja'?'ja':(l==='zh'?'zh-CN':'en');document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');if(I18N[l][k]!==undefined)el.innerHTML=I18N[l][k]});document.querySelectorAll('.lang-switch button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lang')===l)})}
+document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getItem('agentmage-lang')||'en';setLang(s)});
+</script>
+
+<script>
+/* Connect Wallet — plain JS, no libraries. No auto-connect, no signature, no transaction. */
+var WALLET_KEY='agentmage-wallet';
+function walletLang(){return localStorage.getItem('agentmage-lang')||'en';}
+function walletT(k){var l=walletLang();if(window.I18N&&I18N[l]&&I18N[l][k])return I18N[l][k];if(window.I18N&&I18N.en&&I18N.en[k])return I18N.en[k];return k;}
+function walletAddr(){try{return sessionStorage.getItem(WALLET_KEY)||'';}catch(e){return '';}}
+function walletTrunc(a){return a?a.slice(0,6)+'\u2026'+a.slice(-4):'';}
+function walletShowMsg(msg){var m=document.getElementById('walletMsg');if(!m)return;if(!msg){m.textContent='';m.classList.remove('show');return;}m.textContent=msg;m.classList.add('show');}
+function updateWalletBtn(){var b=document.getElementById('walletBtn');if(!b)return;var a=walletAddr();var lo=document.getElementById('walletLabelLong');var sh=document.getElementById('walletLabelShort');if(a){b.classList.add('connected');if(lo)lo.textContent=walletTrunc(a);if(sh)sh.textContent=walletTrunc(a);b.title=walletT('wallet_disconnect');}else{b.classList.remove('connected');if(lo)lo.textContent=walletT('wallet_connect');if(sh)sh.textContent='Connect';b.title='';}}
+function walletCheckChain(silent){if(!window.ethereum||!window.ethereum.request)return;window.ethereum.request({method:'eth_chainId'}).then(function(id){if(id&&id.toLowerCase()!=='0x38'){if(!silent){window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x38'}]}).catch(function(){walletShowMsg(walletT('wallet_wrongnet'));});}else{walletShowMsg(walletT('wallet_wrongnet'));}}}).catch(function(){});}
+function toggleWallet(){var a=walletAddr();if(a){try{sessionStorage.removeItem(WALLET_KEY);}catch(e){}walletShowMsg('');updateWalletBtn();return;}if(!window.ethereum){walletShowMsg(walletT('wallet_nowallet'));return;}window.ethereum.request({method:'eth_requestAccounts'}).then(function(accs){if(!accs||!accs[0])return;try{sessionStorage.setItem(WALLET_KEY,accs[0]);}catch(e){}walletShowMsg('');updateWalletBtn();walletCheckChain(false);}).catch(function(){/* user declined — stay disconnected */});}
+if(window.ethereum&&window.ethereum.on){window.ethereum.on('accountsChanged',function(accs){if(!accs||!accs[0]){try{sessionStorage.removeItem(WALLET_KEY);}catch(e){}updateWalletBtn();}else{try{sessionStorage.setItem(WALLET_KEY,accs[0]);}catch(e){}updateWalletBtn();}});window.ethereum.on('chainChanged',function(id){if(id&&id.toLowerCase()!=='0x38'){walletShowMsg(walletT('wallet_wrongnet'));}else{walletShowMsg('');}});}
+if(typeof setLang==='function'){var _origSetLang=setLang;setLang=function(l){_origSetLang(l);updateWalletBtn();};}
+document.addEventListener('DOMContentLoaded',function(){updateWalletBtn();if(walletAddr())walletCheckChain(true);});
+</script>
+</body>
+</html>
