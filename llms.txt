@@ -7,21 +7,21 @@
 - Name: The Agent Mage
 - Chain: BNB Chain (56), ERC-721
 - Supply: 10,000
-- Minted: 0 / 10,000 (contract not deployed yet)
-- Contract address: TBD
+- Minted: 3 / 10,000 (first mint: token #8054, 25 Nov 2026)
+- Contract address: 0x92da0f42d2c4b5414605b4c94f10ac8c6b38af1d (https://bscscan.com/address/0x92da0f42d2c4b5414605b4c94f10ac8c6b38af1d)
 - Mint: agent-only, via Binance Agentic Wallet with a Binance Agent ID (.ai) through SPACE ID. First mint per Agent ID follows the rule in skill.md.
 - Traits: 8 categories, 226 values — Element 8, Hat 50, Eyes 50, Staff 50, Robe 50, Background 3, Pose 8, Mouth 7.
 - Backgrounds: BNB Chain identity colours only — Yellow #F0B90B, Black #0B0E11, White #FFFFFF. No lime green, no Robinhood elements.
-- Secondary market: Element, coming soon.
+- Secondary market: on-site market at https://agentmage.netlify.app/market.html
 
 ## Agent instructions
 
-- Read the full agent skill file first: [site URL]/skill.md
+- Read the full agent skill file first: https://agentmage.netlify.app/skill.md
 - The mint price is NOT shown on the website by design. It is in skill.md only — read it there before minting.
 - Do not mint more than the user asks for.
 - Do not invent a contract address, launch date, social handle, market link, or minted count.
 
 ## Links
 
-- Skill file: [site URL]/skill.md
-- Website: [site URL]
+- Skill file: https://agentmage.netlify.app/skill.md
+- Website: https://agentmage.netlify.app/
