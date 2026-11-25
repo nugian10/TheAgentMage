@@ -8,9 +8,9 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 
 - **COMPILE OK** — 0 error, 0 warning.
 - Compiler: **solc v0.8.24** (sama dengan THYRK v2), OpenZeppelin **5.4.0**, optimizer on 200 runs, EVM cancun.
-- Bytecode 8.962 byte, deployed 8.036 byte, ABI 65 entries.
+- Bytecode 9.268 byte, deployed 8.342 byte, ABI 70 entries.
 - Build lokal: `contract/build/` (`compile.js`, jalankan `node compile.js` untuk compile ulang).
-- ABI terverifikasi berisi: `mint()`, `holdsAgentId(address)`, `royaltyInfo`, `setMintActive`, `setBaseURI`, `setAgentIdRegistry` — dan **tidak ada** fungsi ERC-20 (`transfer(address,uint256)`, `allowance`, `totalSupply` tidak ada).
+- ABI terverifikasi berisi: `mint()`, `holdsAgentId(address)`, `royaltyInfo`, `setMintActive`, `setBaseURI`, `setPlaceholderBaseURI`, `setAgentIdRegistry` — dan **tidak ada** fungsi ERC-20 (`transfer(address,uint256)`, `allowance`, `totalSupply` tidak ada).
 
 ## Keputusan Bryan yang sudah masuk ke kontrak
 
@@ -24,6 +24,7 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 | Mint | Pertama **GRATIS 1x per Agent ID**, berikutnya **flat 0.0003 BNB** (tanpa tangga harga). |
 | Siapa boleh mint | Hanya pemegang **Agent ID** (SPACE ID gate), seperti THYRK/Zigzoo. |
 | Harga di situs | Tetap **tidak tampil** di situs — hanya di skill.md. |
+| Reveal | **Per-token 24 jam** (pola DRIXOR Core) — bukan reveal global. Lihat bawah. |
 
 ## Cara kerja mint (singkat)
 
@@ -32,6 +33,35 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 3. Kalau itu mint pertama untuk wallet itu → **gratis**, kirim 0 BNB.
 4. Kalau sudah pernah gratis → bayar **tepat 0.0003 BNB**, langsung masuk Agentic Wallet.
 5. NFT dikirim ke wallet pemanggil. 1 NFT per panggilan.
+
+## REVEAL PER-TOKEN 24 JAM (keputusan Bryan 25 Nov 2026)
+
+**Bukan satu reveal global untuk semua token.** Setiap token punya waktunya sendiri:
+
+1. Saat token di-mint, kontrak mencatat `mintedAt[tokenId] = block.timestamp`.
+2. Selama **24 jam pertama** setelah mint, `tokenURI(tokenId)` mengarah ke metadata **placeholder** (`placeholderBaseURI + tokenId + ".json"`) — kartu misteri, gambarnya sama untuk semua token.
+3. Setelah **24 jam lewat**, `tokenURI(tokenId)` **otomatis** mengarah ke metadata **asli** (`baseURI + tokenId + ".json"`). Tidak ada tombol reveal, tidak ada transaksi reveal — waktunya jalan sendiri per token.
+
+Konstanta di kontrak: `REVEAL_DELAY = 24 hours`.
+
+### Kenapa sistem ini
+
+- Mint bisa dibuka **tanpa menunggu upload 10.000 gambar** — itu yang Bryan malas tunggu.
+- Gambar asli hanya perlu dibuat untuk token yang **benar-benar sudah di-mint** — bukan 10.000 sekaligus.
+- Kolektor tetap dapat kejutan: 24 jam pertama NFT-nya misteri.
+
+### Catatan operasional — PENTING
+
+- **Gambar asli tiap token yang di-mint HARUS sudah di-upload sebelum 24 jamnya habis.** Kalau belum, setelah 24 jam token itu menampilkan metadata asli yang belum ada filenya (404 di marketplace) sampai gambarnya di-upload. Jadi setelah mint dibuka, perlu ada yang memantau mint baru dan membuatkan gambarnya dalam 24 jam.
+- **`placeholderBaseURI` WAJIB diisi sebelum mint dibuka** (owner-only `setPlaceholderBaseURI`). Kalau kosong, tokenURI 24 jam pertama mengarah ke alamat kosong.
+- `baseURI` (metadata asli) boleh diisi belakangan, tapi harus sudah terisi sebelum token pertama melewati 24 jam.
+
+### File placeholder (sudah dibuat 25 Nov 2026)
+
+- Kartu misteri: [`collection/mystery.webp`](sandbox://workspace/projects/the-agent-mage/collection/mystery.webp) — siluet chibi mage + tanda "?" emas, latar hitam #0B0E11.
+- IPFS (Pinata): **`ipfs://bafybeif2ufm7yrgzp6lml4uipuybcfslnk4qf6i4g5xccpovw7ruvix5qu`** (CID `bafybeif2ufm7yrgzp6lml4uipuybcfslnk4qf6i4g5xccpovw7ruvix5qu`).
+- Metadata placeholder: `collection/metadata-placeholder/1.json` … `10000.json` (10.000 file, terverifikasi sampel #1, #5000, #10000). Isi tiap file: nama "The Agent Mage #N", deskripsi "mystery mage, not revealed yet", image = IPFS kartu misteri, attributes Status = Unrevealed.
+- Folder metadata placeholder ini **belum di-upload ke mana pun** — nilai `placeholderBaseURI` yang dipakai di kontrak adalah alamat folder ini setelah di-upload (IPFS folder CID atau GitHub raw), bukan CID gambar misterinya.
 
 ## SPACE ID gate — terverifikasi dari kontrak live
 
@@ -42,8 +72,9 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 
 ## Yang masih harus diputuskan sebelum deploy
 
-1. **baseURI metadata** — alamat folder metadata 226 trait (IPFS atau GitHub raw), diisi setelah trait di-upload.
-2. **Token ID urut (1, 2, 3, …).** Kalau mau acak pakai deck seperti THYRK/Zigzoo, bilang — bisa ditambahkan deckHash.
+1. **`placeholderBaseURI`** — alamat folder metadata placeholder setelah di-upload (IPFS / GitHub raw). Wajib diisi sebelum mint dibuka.
+2. **`baseURI` metadata asli** — diisi setelah gambar asli token yang di-mint di-upload (IPFS / GitHub raw).
+3. **Token ID urut (1, 2, 3, …).** Kalau mau acak pakai deck seperti THYRK/Zigzoo, bilang — bisa ditambahkan deckHash.
 
 (Simbol `AGMAGE` sudah dikunci Bryan 25 Nov; alamat SPACE ID sudah terisi dari THYRK/Zigzoo — keduanya bukan lagi hal terbuka.)
 
@@ -51,17 +82,18 @@ File kontrak: [`TheAgentMage.sol`](sandbox://workspace/projects/the-agent-mage/c
 
 - Harga mint 0.0003 BNB — tidak ada fungsi ubah harga.
 - Royalti 5% — tidak ada fungsi ubah royalti.
+- Jeda reveal 24 jam (`REVEAL_DELAY`) — constant.
 - Tidak ada batas per wallet untuk mint berbayar — batasnya hanya 1 gratis per Agent ID.
 
 ## Yang bisa diubah owner setelah deploy
 
 - Buka/tutup mint (`mintActive`, mulai dari **tutup**).
-- `baseURI` metadata.
+- `baseURI` metadata asli + `placeholderBaseURI` (kartu misteri).
 - Alamat `agentIdRegistry` (SPACE ID) + nyalakan/matikan cek Agent ID.
 - Tarik BNB nyasar yang tertinggal di kontrak (kalau ada).
 
 ## Catatan deploy
 
 - Deploy pertama **tidak bisa** lewat Agentic CLI (`baw` tidak bisa broadcast pembuatan kontrak mentah). Deploy harus manual dari wallet Bryan atau lewat factory — tapi constructor langsung memindahkan ownership ke Agentic Wallet, jadi siapa pun yang deploy, owner-nya tetap Agentic.
-- Setelah deploy: verifikasi source di BscScan (seperti proyek-proyek sebelumnya), lalu isi `agentRegistry` + `baseURI`, baru buka mint.
+- Setelah deploy: verifikasi source di BscScan (seperti proyek-proyek sebelumnya), lalu isi `placeholderBaseURI` (+ `baseURI` bila sudah ada), baru buka mint.
 - **Kontrak ini belum diaudit** — verifikasi BscScan bukan audit, sama seperti proyek sebelumnya.

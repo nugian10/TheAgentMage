@@ -27,10 +27,23 @@ pragma solidity ^0.8.20;
 //    per wallet (1 gratis per wallet yang memegang Agent ID), sama
 //    seperti THYRK v2 ("free mint: automatic first/wallet").
 //
+//  REVEAL PER-TOKEN 24 JAM (keputusan Bryan, 25 Nov 2026 ~07:53 WIB —
+//  pola DRIXOR Core): BUKAN satu reveal global. Setiap token punya
+//  waktunya sendiri: tokenURI menampilkan metadata PLACEHOLDER (kartu
+//  misteri) selama 24 jam pertama setelah token itu di-mint, lalu
+//  OTOMATIS menampilkan metadata asli. Jadi mint bisa dibuka TANPA
+//  upload 10.000 gambar dulu — gambar asli hanya perlu dibuat untuk
+//  token yang BENAR-BENAR sudah di-mint, dan harus sudah di-upload
+//  sebelum 24 jam token itu habis (kalau tidak, tokenURI asli akan
+//  404 sampai gambarnya di-upload). Tidak ada tombol reveal global.
+//
 //  YANG MASIH HARUS DIPUTUSKAN SEBELUM DEPLOY (lihat README.md):
-//    1. baseURI metadata (IPFS / GitHub raw) — diisi setelah 226 trait
-//       di-upload.
-//    2. Token ID di sini URUT (1, 2, 3, ...). Kalau mau acak pakai deck
+//    1. placeholderBaseURI — alamat folder metadata placeholder
+//       (10.000 JSON kartu misteri, dibuat di collection/
+//       metadata-placeholder/). Diisi sebelum mint dibuka.
+//    2. baseURI metadata asli — diisi setelah gambar asli token
+//       yang di-mint di-upload (IPFS / GitHub raw).
+//    3. Token ID di sini URUT (1, 2, 3, ...). Kalau mau acak pakai deck
 //       seperti THYRK/Zigzoo, bilang — deckHash bisa ditambahkan.
 //  ---------------------------------------------------------------------------
 //  CATATAN DEPLOY: baw (Agentic CLI) TIDAK bisa broadcast pembuatan kontrak
@@ -66,6 +79,9 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     uint256 public constant MINT_PRICE = 0.0003 ether; // flat, tanpa tangga harga
     uint256 public constant FREE_MINTS_PER_AGENT_ID = 1;
 
+    /// @notice Jeda reveal per-token: 24 jam setelah token di-mint.
+    uint256 public constant REVEAL_DELAY = 24 hours;
+
     /// @notice Royalti 5% = 500 basis poin (dari 10.000).
     uint96 public constant ROYALTY_BPS = 500;
 
@@ -74,12 +90,17 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     // ------------------------------------------------------------------------
     uint256 public totalMinted;
     bool public mintActive; // mulai false — dibuka owner setelah registry + baseURI siap
-    string public baseURI; // contoh: "ipfs://.../metadata/" atau GitHub raw
+    string public baseURI; // metadata ASLI — contoh: "ipfs://.../metadata/"
+    string public placeholderBaseURI; // metadata PLACEHOLDER (kartu misteri)
     address public agentIdRegistry; // default = SPACE ID HandleRegistry
     bool public agentIdCheckRequired = true; // owner bisa matikan bila perlu
 
     /// @notice Wallet -> apakah jatah mint gratisnya sudah dipakai.
     mapping(address => bool) public freeMintUsed;
+
+    /// @notice Token ID -> waktu (block.timestamp) token itu di-mint.
+    /// @dev Dipakai tokenURI untuk menghitung kapan 24 jam reveal habis.
+    mapping(uint256 => uint256) public mintedAt;
 
     // ------------------------------------------------------------------------
     //  EVENTS
@@ -87,6 +108,7 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     event Minted(address indexed minter, uint256 indexed tokenId, uint256 paid);
     event MintActiveChanged(bool active);
     event BaseURIChanged(string baseURI);
+    event PlaceholderBaseURIChanged(string placeholderBaseURI);
     event AgentIdRegistryUpdated(address indexed agentIdRegistry);
     event AgentIdCheckChanged(bool required);
 
@@ -146,15 +168,23 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
 
         totalMinted += 1;
         uint256 tokenId = totalMinted; // ID urut 1..10.000
+        mintedAt[tokenId] = block.timestamp;
         _safeMint(msg.sender, tokenId);
         emit Minted(msg.sender, tokenId, msg.value);
     }
 
     // ------------------------------------------------------------------------
-    //  METADATA
+    //  METADATA — REVEAL PER-TOKEN 24 JAM
     // ------------------------------------------------------------------------
+    /// @notice Selama 24 jam pertama setelah mint, tokenURI mengarah ke
+    ///         metadata PLACEHOLDER (kartu misteri). Setelah 24 jam,
+    ///         otomatis mengarah ke metadata ASLI (baseURI). Tidak ada
+    ///         tombol reveal — waktunya jalan sendiri per token.
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(tokenId >= 1 && tokenId <= totalMinted, "Token belum ada");
+        if (block.timestamp < mintedAt[tokenId] + REVEAL_DELAY) {
+            return string(abi.encodePacked(placeholderBaseURI, tokenId.toString(), ".json"));
+        }
         return string(abi.encodePacked(baseURI, tokenId.toString(), ".json"));
     }
 
@@ -170,6 +200,14 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     function setBaseURI(string calldata newBaseURI) external onlyOwner {
         baseURI = newBaseURI;
         emit BaseURIChanged(newBaseURI);
+    }
+
+    /// @notice Isi/ubah alamat folder metadata PLACEHOLDER (kartu misteri).
+    ///         Wajib diisi SEBELUM mint dibuka — kalau kosong, tokenURI
+    ///         24 jam pertama akan mengarah ke alamat kosong.
+    function setPlaceholderBaseURI(string calldata newPlaceholderBaseURI) external onlyOwner {
+        placeholderBaseURI = newPlaceholderBaseURI;
+        emit PlaceholderBaseURIChanged(newPlaceholderBaseURI);
     }
 
     /// @notice Arahkan cek Agent ID ke registry lain (mis. bila SPACE ID
@@ -218,6 +256,8 @@ contract TheAgentMage is ERC721, ERC2981, Ownable, ReentrancyGuard {
     //  - Fungsi ubah royalti: ROYALTY_BPS constant — royalti 5% terkunci.
     //  - Fungsi ubah owner ke alamat lain: Ownable standar tetap ada
     //    (transferOwnership), tapi hanya owner (Agentic) yang bisa pakai.
+    //  - Fungsi reveal global / flag `revealed`: TIDAK ADA, sesuai
+    //    keputusan Bryan (reveal per-token 24 jam, otomatis per token).
     //  - Batas per wallet: TIDAK ADA — batasnya per Agent ID (1 gratis),
     //    mint berbayar tidak dibatasi jumlahnya.
 }
